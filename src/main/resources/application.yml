@@ -14,6 +14,9 @@ spring:
         max-idle: 8
         min-idle: 0
     timeout: 10000
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
   datasource:
     url: jdbc:mysql://192.168.50.171:3306/meio_dev?useUnicode=true&characterEncoding=utf8
     username: root
@@ -28,6 +31,8 @@ server:
 mybatis:
   mapper-locations: classpath*:mapper/*.xml
   type-aliases-package: com.kando.entity
+  configuration:
+    map-underscore-to-camel-case: true
 
 #
 feign:

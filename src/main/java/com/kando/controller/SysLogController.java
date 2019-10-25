@@ -18,9 +18,9 @@ public class SysLogController {
     @GetMapping("/page")
     public Result page(PageVo vo){
 
-//        QueryResult<SysLogEntity> list = sysLogService.selectAll(vo);
+        QueryResult<SysLogEntity> list = sysLogService.selectAll(vo);
         Result<QueryResult<SysLogEntity>> result = new Result<>();
-//        result.setData(list);
+        result.setData(list);
         return result;
     }
 }
