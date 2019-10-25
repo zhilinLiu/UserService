@@ -38,9 +38,11 @@ public class RoleController {
         Result<Object> result = new Result<>();
         if (service.inserRole(role)){
             result.setCode(0);
+            result.setSuccess(true);
             result.setMessage("新增角色成功");
         }else {
             result.setCode(1);
+            result.setSuccess(false);
             result.setMessage("新增角色失败");
         }
         return result;
@@ -53,10 +55,12 @@ public class RoleController {
         if(service.deleteRole(id)){
             log.info("删除角色成功");
             result.setCode(0);
+            result.setSuccess(true);
             result.setMessage("删除角色成功");
         }else {
             log.error("删除角色失败,没有这个角色或者角色已经被删除");
             result.setCode(0);
+            result.setSuccess(false);
             result.setMessage("删除角色失败,没有这个角色或者角色已经被删除");
         }
         return result;
@@ -69,10 +73,12 @@ public class RoleController {
         if(service.updateRole(role)){
             log.info("更新角色成功");
             result.setCode(0);
+            result.setSuccess(true);
             result.setMessage("更新角色成功");
         }else {
             log.error("更新角色失败");
             result.setCode(1);
+            result.setSuccess(false);
             result.setMessage("更新角色失败");
         }
         return result;
@@ -91,11 +97,13 @@ public class RoleController {
         if(role!=null){
             log.info("查询成功");
             result.setCode(0);
+            result.setSuccess(true);
             result.setMessage("根据id查询角色成功");
             result.setData(role);
         }else {
             log.error("查询失败");
             result.setCode(1);
+            result.setSuccess(false);
             result.setMessage("查询失败，没有返回数据");
         }
         return result;
@@ -109,11 +117,13 @@ public class RoleController {
         if(queryResult!=null){
             log.info("查询成功");
             result.setCode(0);
+            result.setSuccess(true);
             result.setMessage("根据id查询角色成功");
             result.setData(queryResult);
         }else {
             log.error("查询失败");
             result.setCode(1);
+            result.setSuccess(false);
             result.setMessage("查询失败，没有返回数据");
         }
         return result;
