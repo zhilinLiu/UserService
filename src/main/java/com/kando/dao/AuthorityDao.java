@@ -1,7 +1,6 @@
-package com.kando.mapper;
+package com.kando.dao;
 
 import com.kando.entity.Authority;
-import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 

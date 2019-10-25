@@ -3,6 +3,12 @@ package com.kando.service;
 
 import java.util.Map;
 
+import com.github.pagehelper.PageInfo;
+import com.kando.dto.Result;
+import com.kando.entity.User;
+import com.kando.vo.PageVo;
+
+
 
 
 
@@ -10,22 +16,31 @@ import java.util.Map;
 * @ClassName: UserService  
 * @Description: 业务层接口
 * @author 孙雨佳  
-* @date 2019年10月18日  
+* @date 2019年10月23日  
 *    
 */ 
 public interface UserService {
 	
-	     Map<String, Object> index(Map<String, String> map);
+		 Boolean loginByPwd(User user);
 	   
-	     Map<String, Object> index1(Map<String, String> map);
+	     Boolean loginByCode(User user);
 	    
-	     Map<String, Object> index2(Map<String, String> map);
+	     Boolean loginCheckCode(User user);
 		   
-	     Map<String, Object> index3(Map<String, String> map);
+	     Boolean indexByCode(User user);
 	    
-	     Map<String, Object> login(Map<String, String> map);
+	     Boolean indexCheckCode(User user);
 	    
-	     Map<String, Object> login2(Map<String, String> map);
+	     Result<?> indexBindEmail(User user);
 	    
-	     Map<String, Object> login3(Map<String, String> map);
+	     Boolean IndexEmailCode(User user);
+
+	     PageInfo<User> selectUser(PageVo pageVo);
+		 
+	     Boolean deleteUser(User user);
+		                                          
+		 Boolean updateUser(User user);
+		 
+		 User updateUser1(User user);
+
 }

@@ -1,10 +1,10 @@
-package com.kando.mapper;
+package com.kando.dao;
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+import java.util.List;
 
 import com.kando.entity.User;
-@Mapper
+import org.apache.ibatis.annotations.Param;
+
 public interface  UserDao {
 	public User selectByphone(@Param("phone") String phone);
 	
@@ -15,4 +15,14 @@ public interface  UserDao {
 	public User selectByemail(@Param("email") String email);
 	
 	public Integer updateEmail(User user);
+	
+	public Integer update(User user);
+	
+	public Integer deleteByid(@Param("id") Integer id);
+	
+	public User selectByid(@Param("id") Integer id);
+
+	public List<User> selectAll(@Param("key") String key);
+	
+	
 }

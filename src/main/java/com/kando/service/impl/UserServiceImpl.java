@@ -1,11 +1,13 @@
 package com.kando.service.impl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 
 import com.kando.service.UserService;
+
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -14,13 +16,18 @@ import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.kando.common.exception.MeioException;
+import com.kando.common.exception.ResultEnum;
+import com.kando.dao.UserDao;
+import com.kando.dto.Result;
 import com.kando.entity.User;
-import com.kando.mapper.UserDao;
-import com.kando.util.Message;
 import com.kando.util.Random;
 import com.kando.util.TestDate;
-
+import com.kando.vo.PageVo;
 /**  
 * @ClassName: UserServiceImpl  
 * @Description: TODO业务层
@@ -34,289 +41,276 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private UserDao userDao;
 
-	@Autowired
-	private RoleServiceImpl authorityService;
 
 	@Autowired
 	private StringRedisTemplate redis;
 	
+	
 	/** 
-	 * @Title: login 
+	 * @Title: loginByPwd 
 	 * @Description:登陆操作-手机号密码登陆
-	 * @param map
-	 * @return map
-	 * @see UserService#login(Map)
+	 * @param User
+	 * @return Result
 	 */
 	@Override
-	public Map<String, Object> login(Map<String, String> map) {
-		try {
-			String password = map.get("password");
-			String phone = map.get("phone");
-			Map<String, Object> result = new HashMap<String, Object>();
-			// 用户名密码不为空
-			if (StringUtils.isNotBlank(phone) && StringUtils.isNotBlank(password)) {
-				// 结果集不为空
-				if (ObjectUtils.isNotEmpty(userDao.selectByphone(phone))) {
-					// 开始验证密码
-					// 获取钥匙
-					UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(phone, password);
-					// 获取大门
-					Subject subject = SecurityUtils.getSubject();
-					try {
-						// 开门
-						subject.login(usernamePasswordToken);
-						result.put("message", "登陆成功");
-						result.put("resultCode", Message.LOGIN_SUCCESS);
-					} catch (Exception exception) {
-						result.put("message", "手机号或密码不正确");
-						result.put("resultCode", Message.LOGIN_FAIL);
-						return result;
-					}
-				} else {
-					result.put("message", "手机号不存在");
-					result.put("resultCode", Message.USERNAME_IS_NOT_BLANK);
-				}
+	public Boolean loginByPwd(User user) {
+			Boolean bool = true;
+			String password = user.getPassword();
+			String phone = user.getPhone();
+			User user1 = userDao.login(phone, password);
+			if (ObjectUtils.isNotEmpty(user1)) {
+					bool = true;
 			} else {
-				result.put("message", "手机号或密码不能为空");
-				result.put("resultCode", Message.PASSWORD_IS_BLANK);
+				throw new MeioException(ResultEnum.USER_NOT_EXIST);
 			}
-			return result;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+			return bool;
+
 
 	}
 
 	/** 
-	 * @Title: login2 
+	 * @Title: loginByCode 
 	 * @Description: 登陆操作-手机短信登陆-发送验证码
-	 * @param map
-	 * @return 
-	 * @see UserService#login2(Map)
+	 * @param User
+	 * @return Result
 	 */
 	@Override
-	public Map<String, Object> login2(Map<String, String> map) {
-		try {
+	public Boolean loginByCode(User user) {
+			Boolean bool =false;
 			String seccode = Random.getRandom();
-			String phone = map.get("phone");
+			String phone = user.getPhone();
 			redis.opsForValue().set(phone, seccode, 5, TimeUnit.MINUTES);
-			Map<String, Object> result = new HashMap<String, Object>();
 			System.out.println("登陆");
-			if (StringUtils.isNotBlank(phone)) {
-				if (ObjectUtils.isNotEmpty(userDao.selectByphone(phone))) {
-					result.put("message", "验证码发送成功");
-					result.put("seccode", seccode);
-					result.put("resultCode", Message.LOGIN_SUCCESS);
+			System.out.println(seccode);
+				if (ObjectUtils.isNotEmpty(userDao.selectByphone(phone))) {          
+					bool = true;
 				} else {
-					result.put("message", "手机号不存在");
-					result.put("resultCode", Message.USERNAME_IS_NOT_BLANK);
+					throw new MeioException(ResultEnum.USER_NOT_EXIST);
 				}
-			} else {
-				result.put("message", "手机号不能为空");
-				result.put("resultCode", Message.PASSWORD_IS_BLANK);
-			}
-			return result;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+			return bool;
 	}
 
 	/** 
-	 * @Title: login3 
+	 * @Title: loginCheckCode 
 	 * @Description: 登陆操作-手机短信登陆-验证验证码
-	 * @param map
-	 * @return map
-	 * @see UserService#login3(Map)
+	 * @param User
+	 * @return Result
 	 */
 	@Override
-	public Map<String, Object> login3(Map<String, String> map) {
-		try {
-            String phone = map.get("phone");
+	public Boolean loginCheckCode(User user) {
+			Boolean bool = false;
+            String phone = user.getPhone();
             String seccode1 = redis.opsForValue().get(phone);
-            String seccode = map.get("seccode");
-            Map<String, Object> result = new HashMap<String, Object>();
+            String seccode = user.getSeccode();
             System.out.println("登陆");
             if (StringUtils.isNotBlank(seccode1)) {
                 if (seccode.equals(seccode1)) {
-                    User user = userDao.selectByphone(phone);
-                    Subject subject = SecurityUtils.getSubject();
-                    UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(phone, user.getPassword());
-                    subject.login(usernamePasswordToken);
-                    subject.getSession().setAttribute("user",user);
-                    result.put("message", "登陆成功");
-                    result.put("resultCode", Message.LOGIN_SUCCESS);
+                    bool = true;
                 } else {
-                    result.put("message", "登陆失败，手机号或验证码不正确");
-                    result.put("resultCode", Message.SECCODE_FAIL);
+                	throw new MeioException(ResultEnum.Code_long_ERROR); 
                 }
             } else {
-                result.put("message", "登陆失败，手机号或验证码不正确");
-                result.put("resultCode", Message.SECCODE_FAIL);
+            	throw new MeioException(ResultEnum.PHONE_STOCK_ERROR); 
             }
-            return result;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+            return bool;
+
 	}
 	
 	/** 
-	 * @Title: index 
+	 * @Title: indexByCode 
 	 * @Description: 注册操作-发送手机验证码
-	 * @param map
-	 * @return map
-	 * @see UserService#index(Map)
+	 * @param User
+	 * @return Result
 	 */
 	@Override
-	public Map<String, Object> index(Map<String, String> map) {
-		try {
+	public Boolean indexByCode(User user) {
+			Boolean bool = false;
 			String seccode = Random.getRandom();
-			String phone = map.get("phone");
+			String phone = user.getPhone();
 			redis.opsForValue().set(phone, seccode, 5, TimeUnit.MINUTES);
-			Map<String, Object> result = new HashMap<String, Object>();
 			System.out.println("注册");
-			if (StringUtils.isNotBlank(phone)) {
 				if (ObjectUtils.isEmpty(userDao.selectByphone(phone))) {
-					result.put("message", "验证码发送成功");
-					result.put("seccode", seccode);
-					result.put("resultCode", Message.LOGIN_SUCCESS);
+					bool = true;
+					System.out.println(seccode);
 				} else {
-					result.put("message", "手机号已存在");
-					result.put("resultCode", Message.USERNAME_IS_NOT_BLANK);
+					throw new MeioException(ResultEnum.PHONE_IS_EXIST); 
 				}
-			} else {
-				result.put("message", "手机号不能为空");
-				result.put("resultCode", Message.PASSWORD_IS_BLANK);
-			}
-			return result;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+			return bool;
+
 
 	}
 	/** 
-	 * @Title: index1 
+	 * @Title: indexCheckCode 
 	 * @Description: 注册操作-验证手机验证码
-	 * @param map
-	 * @return map
-	 * @see UserService#index1(Map)
+	 * @param User
+	 * @return Result
 	 */
 	@Override
-	public Map<String, Object> index1(Map<String, String> map) {
-		try {
-			String phone = map.get("phone");
+	public Boolean indexCheckCode(User user) {
+			Boolean bool = false;
+			String phone = user.getPhone();
 			String seccode1 = redis.opsForValue().get(phone);
-			String seccode = map.get("seccode");
-			String user_name = map.get("user_name");
-			String password = map.get("password");
-			String role = String.valueOf(map.get("role"));
-			Integer sex = Integer.valueOf(map.get("sex"));
-			Map<String, Object> result = new HashMap<String, Object>();
+			String seccode = user.getSeccode();
+			String user_name = user.getUser_name();
+			String password = user.getPassword();
+			String role = user.getRole();
+			Integer sex = user.getSex();
 			System.out.println("验证验证码");
 			if (StringUtils.isNotBlank(seccode1)) {
 				if (seccode.equals(seccode1)) {
-					User user = new User();
-					user.setPhone(phone);
-					user.setSex(sex);
-					user.setUser_name(user_name);
-					user.setPassword(password);
+					User user1 = new User();
+					user1.setPhone(phone);
+					user1.setSex(sex);
+					user1.setUser_name(user_name);
+					user1.setPassword(password);
 					TestDate date = new TestDate();
-					user.setCreate_time(date.getDate());
-					userDao.index(user);
-					//添加默认角色--访客
-
-					result.put("message", "注册成功");
-					result.put("resultCode", Message.LOGIN_SUCCESS);
+					user1.setCreate_time(date.getDate());
+					userDao.index(user1);
+//					//添加默认角色--访客
+//					if (role.equals("1")){
+//						authorityService.addGuest(phone);
+//					}else if(role.equals("2")){
+//						authorityService.addDesigner(phone);
+//					}else if(role.equals("3")){
+//						authorityService.addSpecialist(phone);
+//					}
+					bool = true;
 				} else {
-					result.put("message", "注册失败，手机号或验证码不正确");
-					result.put("resultCode", Message.SECCODE_FAIL);
+					throw new MeioException(ResultEnum.PHONE_STOCK_ERROR); 
 				}
 			} else {
-				result.put("message", "注册失败，验证码不能为空");
-				result.put("resultCode", Message.SECCODE_FAIL);
+				throw new MeioException(ResultEnum.Code_long_ERROR); 
 			}
-			return result;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+			return bool;
 	}
 
 	/** 
-	 * @Title: index2 
+	 * @Title: indexBindEmail 
 	 * @Description: 注册操作-绑定邮箱-发送邮箱验证码
-	 * @param map
-	 * @return 
-	 * @see UserService#index2(Map)
+	 * @param User
+	 * @return Result
 	 */
 	@Override
-	public Map<String, Object> index2(Map<String, String> map) {
-		try {
-			Map<String, Object> result = new HashMap<String, Object>();
-			String email = map.get("email");
+	public Result indexBindEmail(User user) {
+		Result result = new Result();
+			String email = user.getEmail();
 			if (StringUtils.isNotBlank(email)) {
 				if (ObjectUtils.isEmpty(userDao.selectByemail(email))) {
 					String seccode = Random.getRandom();
 					redis.opsForValue().set(email, seccode, 5, TimeUnit.MINUTES);
-					result.put("message", "验证码发送成功");
-					result.put("seccode", seccode);
-					result.put("resultCode", Message.LOGIN_SUCCESS);
+					result.setCode(0);
+                    result.setMessage("验证码发送成功");
+                    result.setSuccess(true);
+                    result.setData(seccode);
 				} else {
-					result.put("message", "邮箱已被绑定");
-					result.put("resultCode", Message.USERNAME_IS_NOT_BLANK);
+					result.setCode(1);
+                    result.setMessage("邮箱已被绑定");
+                    result.setSuccess(false);
 				}
 			} else {
-				result.put("message", "邮箱不能为空");
-				result.put("resultCode", Message.PASSWORD_IS_BLANK);
+				result.setCode(1);
+                result.setMessage("邮箱不能为空");
+                result.setSuccess(false);
 			}
 			return result;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 	/** 
-	 * @Title: index3 
+	 * @Title: IndexEmailCode 
 	 * @Description: 注册操作-验证邮箱验证码
-	 * @param map
-	 * @return map
-	 * @see UserService#index3(Map)
+	 * @param User
+	 * @return Result
 	 */
 	@Override
-	public Map<String, Object> index3(Map<String, String> map) {
-		try {
-			String phone = map.get("phone");
-			String email = map.get("email");
+	public Boolean IndexEmailCode(User user) {
+			Boolean bool =false;
+			String phone = user.getPhone();
+			String email = user.getEmail();
 			String seccode1 = redis.opsForValue().get(email);
-			String seccode = map.get("seccode");
+			String seccode = user.getSeccode();
 			System.out.println(email);
-			Map<String, Object> result = new HashMap<String, Object>();
 			if (StringUtils.isNotBlank(seccode1)) {
 				if (seccode.equals(seccode1)) {
-					User user = new User();
-					user.setPhone(phone);
-					user.setEmail(email);
-					userDao.updateEmail(user);
-					result.put("message", "绑定邮箱成功");
-					result.put("resultCode", Message.LOGIN_SUCCESS);
-					return result;
+					User user1 = new User();
+					user1.setPhone(phone);
+					user1.setEmail(email);
+					userDao.updateEmail(user1);
+					bool = true;
 				} else {
-					result.put("message", "绑定邮箱失败，邮箱或验证码不正确");
-					result.put("resultCode", Message.SECCODE_FAIL);
+					throw new MeioException(ResultEnum.EMAIL_STOCK_ERROR); 
 				}
 			} else {
-				result.put("message", "绑定邮箱失败，邮箱或验证码不能为空");
-				result.put("resultCode", Message.SECCODE_FAIL);
+				throw new MeioException(ResultEnum.EMAIL_NULL_ERROR);
 			}
-			return result;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+			return bool;
 	}
-
+	/** 
+	 * @Title: deleteUser
+	 * @Description: 用戶管理-刪除用戶
+	 * @param User
+	 * @return Result
+	 */
+	@Override
+	public Boolean deleteUser(User user) {
+		Integer id = user.getId();
+		Boolean bool = false;
+		if(userDao.deleteByid(id)>0) {
+			bool = true;
+		}
+		return bool;
+	}
+	
+	/** 
+	 * @Title: selectUser
+	 * @Description: 用戶管理-查找用户-分页查询
+	 * @param User
+	 * @return PageInfo<User>
+	 */
+	@Override
+	public PageInfo<User> selectUser(PageVo pageVo) {
+			Integer pageNum = pageVo.getPage();
+			Integer pageSize = pageVo.getLimit();
+			PageHelper.startPage(pageNum, pageSize);
+			String Key = pageVo.getKey();
+			List<User> user1 = userDao.selectAll(Key);
+			PageInfo<User> pageInfo= new PageInfo<User>(user1);
+			return pageInfo;
+	}
+	
+	/** 
+	 * @Title: updateUser1
+	 * @Description: 用戶管理-修改用户
+	 * @param User
+	 * @return Result
+	 */
+	@Override
+	public User updateUser1 (User user) {
+			Integer id = user.getId();
+			User user1 = userDao.selectByid(id);
+			return user1;
+	}
+	
+	/** 
+	 * @Title: updateUser
+	 * @Description: 用戶管理-修改用户
+	 * @param User
+	 * @return Result
+	 */
+	@Override
+	public Boolean updateUser (User user) {
+			Boolean bool = false;
+			User user1 = new User();
+			user1.setUser_name(user.getUser_name());
+			user1.setPassword(user.getPassword());
+			user1.setPhone(user.getPhone());
+			user1.setSex(user.getSex());
+			user1.setStatus(user.getStatus());
+			user1.setEmail(user.getEmail());
+			user1.setId(user.getId());
+			Integer a = userDao.update(user);
+			if(a>0) {
+				bool = true;
+			}
+			return bool;
+	}
 }

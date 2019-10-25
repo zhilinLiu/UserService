@@ -4,24 +4,32 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.constraints.NotBlank;
+
+/**  
+* @ClassName: User  
+* @Description: TODO(用户表实体类)  
+* @author 孙雨佳  
+* @date 2019年10月24日  
+*    
+*/ 
 public class User implements Serializable {
     private Integer id;
 
     private String user_name;
-
     private String password;
 
     private Integer sex;
-    
     private String email;
-    
     private String phone;
     
 	private Date create_time;
     
     private Integer status;
     
-    private List<Role> role;
+    private String role;
+    
+    private String seccode;
 
 	public Integer getId() {
 		return id;
@@ -87,19 +95,26 @@ public class User implements Serializable {
 		this.status = status;
 	}
 
-	public List<Role> getRole() {
+	public String getRole() {
 		return role;
 	}
 
-	public void setRole(List<Role> role) {
+	public void setRole(String role) {
 		this.role = role;
+	}
+
+	public String getSeccode() {
+		return seccode;
+	}
+
+	public void setSeccode(String seccode) {
+		this.seccode = seccode;
 	}
 
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", user_name=" + user_name + ", password=" + password + ", sex=" + sex + ", email="
-				+ email + ", phone=" + phone + ", create_time=" + create_time + ", status=" + status + "]";
+				+ email + ", phone=" + phone + ", create_time=" + create_time + ", status=" + status + ", role=" + role
+				+ ", seccode=" + seccode + "]";
 	}
-    
-    
 }
