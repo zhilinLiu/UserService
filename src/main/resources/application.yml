@@ -1,0 +1,44 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: user-service
+  redis:
+    host: 192.168.50.171
+    port: 6379
+    password:
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0
+    timeout: 10000
+  datasource:
+    url: jdbc:mysql://192.168.50.171:3306/meio_dev?useUnicode=true&characterEncoding=utf8
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8888/eureka/
+server:
+  port: 8765
+mybatis:
+  mapper-locations: classpath*:mapper/*.xml
+  type-aliases-package: com.kando.entity
+
+#
+feign:
+  hystrix:
+    enabled: false
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          strategy: SEMAPHORE
+pagehelper:
+  helperDialect: mysql
+  reasonable: true

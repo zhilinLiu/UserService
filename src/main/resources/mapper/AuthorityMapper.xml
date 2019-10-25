@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kando.mapper.AuthorityDao">
+
+    <select id="selectAll" resultMap="AuthorityMap">
+		select * from sys_authority
+	</select>
+    <select id="selectOne" resultMap="AuthorityMap">
+        select * from sys_authority where id=#{id}
+    </select>
+    <select id="selectAllLike" resultMap="AuthorityMap">
+        select * from sys_authority where name like #{field}
+    </select>
+
+    <insert id="insertAuth" parameterType="com.kando.entity.Authority">
+        insert into sys_authority(name,description,menu_id,fun_id) values(#{name},#{description},#{menu_id},#{fun_id})
+    </insert>
+    <delete id="deleteAuth" parameterType="java.lang.Integer">
+        delete from sys_authority where id=#{id}
+    </delete>
+    <update id="updateAuth" parameterType="com.kando.entity.Authority">
+        update sys_authority SET name=#{name},description=#{description},menu_id=#{menu_id},fun_id=#{fun_id} where id=#{id}
+    </update>
+
+
+
+    <resultMap type="Authority" id="AuthorityMap">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="description" property="description"/>
+        <result column="menu_id" property="menu_id"/>
+        <result column="fun_id" property="fun_id"/>
+    </resultMap>
+</mapper>

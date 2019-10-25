@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kando.mapper.SysLogDao">
+    <insert id="insert">
+  		insert into sys_log(
+  		id,user_name,operation,method,params,
+  		time,ip,create_time
+  		)values(
+  		#{id},#{userName},#{operation},#{method},#{params},
+  		#{time},#{ip},#{createTime}
+  		)
+  	</insert>
+    <select id="selectAll" resultMap="SysLogMap">
+		select * from sys_log where 1=1
+		<if test="key!=null">
+			and  (user_name like #{key}
+			or operation like #{key}
+			)
+		</if>
+
+	</select>
+
+    <resultMap type="SysLogEntity" id="SysLogMap">
+        <id column="id" property="id"/>
+    </resultMap>
+</mapper>
