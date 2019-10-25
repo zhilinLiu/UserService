@@ -27,7 +27,6 @@ public class FeginRequesIntercepter implements RequestInterceptor {
                 Enumeration<String> values = request.getHeaders(name);
                 while (values.hasMoreElements()) {
                     String value = values.nextElement();
-                    System.out.println("head:"+name+"   value:"+value);
                     requestTemplate.header(name, value);
                 }
             }

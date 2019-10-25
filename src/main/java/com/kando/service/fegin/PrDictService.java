@@ -4,6 +4,7 @@ import com.kando.ao.IdAo;
 import com.kando.dto.JSONResponse;
 import com.kando.entity.busEntity.PrDictEntity;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -11,7 +12,7 @@ import java.util.Map;
 /**
  *
  */
-@FeignClient(value = "bus-service",path = "pr/dict")
+@FeignClient(value = "bus-service",path = "pr/dict",fallback = PrDictService.PrDictFallback.class)
 public interface PrDictService {
     @RequestMapping("/all")
     public JSONResponse queryAll(@RequestParam Map<String, Object> params);
@@ -69,4 +70,44 @@ public interface PrDictService {
      */
     @RequestMapping("/queryByCode")
     public JSONResponse queryByCode(@RequestParam Map<String, Object> params);
+
+
+    @Component
+    public class PrDictFallback implements PrDictService {
+
+        @Override
+        public JSONResponse queryAll(Map<String, Object> params) {
+            return new JSONResponse(false,"1","远程调用PrDictService失败了，服务未开启或者方法出问题",null);
+        }
+
+        @Override
+        public JSONResponse list(Map<String, Object> params) {
+            return new JSONResponse(false,"1","远程调用PrDictService失败了，服务未开启或者方法出问题",null);
+        }
+
+        @Override
+        public JSONResponse info(String id) {
+            return new JSONResponse(false,"1","远程调用PrDictService失败了，服务未开启或者方法出问题",null);
+        }
+
+        @Override
+        public JSONResponse save(PrDictEntity prDict) {
+            return new JSONResponse(false,"1","远程调用PrDictService失败了，服务未开启或者方法出问题",null);
+        }
+
+        @Override
+        public JSONResponse update(PrDictEntity prDict) {
+            return new JSONResponse(false,"1","远程调用PrDictService失败了，服务未开启或者方法出问题",null);
+        }
+
+        @Override
+        public JSONResponse delete(IdAo ao) {
+            return new JSONResponse(false,"1","远程调用PrDictService失败了，服务未开启或者方法出问题",null);
+        }
+
+        @Override
+        public JSONResponse queryByCode(Map<String, Object> params) {
+            return new JSONResponse(false,"1","远程调用PrDictService失败了，服务未开启或者方法出问题",null);
+        }
+    }
 }

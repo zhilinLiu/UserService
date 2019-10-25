@@ -4,6 +4,7 @@ import com.kando.ao.IdAo;
 import com.kando.dto.JSONResponse;
 import com.kando.entity.busEntity.PrNounEntity;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -11,7 +12,7 @@ import java.util.Map;
 /**
  *
  */
-@FeignClient(value = "bus-service", path = "pr/noun")
+@FeignClient(value = "bus-service", path = "pr/noun",fallback = PrNounService.PrNounFallback.class)
 public interface PrNounService {
     /**
      * 查看所有列表
@@ -66,4 +67,38 @@ public interface PrNounService {
     @PostMapping("/delete")
     @ResponseBody
     public JSONResponse delete(@RequestBody IdAo ao);
+
+    @Component
+    public class PrNounFallback implements PrNounService {
+
+        @Override
+        public JSONResponse queryAll(Map<String, Object> params) {
+            return new JSONResponse(false,"1","远程调用PrNounService失败了，服务未开启或者方法出问题",null);
+        }
+
+        @Override
+        public JSONResponse list(Map<String, Object> params) {
+            return new JSONResponse(false,"1","远程调用PrNounService失败了，服务未开启或者方法出问题",null);
+        }
+
+        @Override
+        public JSONResponse info(String id) {
+            return new JSONResponse(false,"1","远程调用PrNounService失败了，服务未开启或者方法出问题",null);
+        }
+
+        @Override
+        public JSONResponse save(PrNounEntity prNoun) {
+            return new JSONResponse(false,"1","远程调用PrNounService失败了，服务未开启或者方法出问题",null);
+        }
+
+        @Override
+        public JSONResponse update(PrNounEntity prNoun) {
+            return new JSONResponse(false,"1","远程调用PrNounService失败了，服务未开启或者方法出问题",null);
+        }
+
+        @Override
+        public JSONResponse delete(IdAo ao) {
+            return new JSONResponse(false,"1","远程调用PrNounService失败了，服务未开启或者方法出问题",null);
+        }
+    }
 }

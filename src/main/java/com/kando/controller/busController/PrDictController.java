@@ -5,11 +5,9 @@ import com.kando.dto.JSONResponse;
 import com.kando.entity.busEntity.PrDictEntity;
 import com.kando.service.fegin.PrDictService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 /**

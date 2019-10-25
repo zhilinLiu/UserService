@@ -5,6 +5,7 @@ import com.kando.ao.PrVo;
 import com.kando.dto.JSONResponse;
 import com.kando.entity.busEntity.PrFanganEntity;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -12,7 +13,7 @@ import java.util.Map;
 /**
  *
  */
-@FeignClient(value = "bus-service",path = "pr/fangan")
+@FeignClient(value = "bus-service",path = "pr/fangan",fallback = PrFanganService.PrFangganFeginFallback.class)
 public interface PrFanganService {
     /**
      * 查看所有列表
@@ -79,4 +80,43 @@ public interface PrFanganService {
      */
     @RequestMapping("/delete")
     public JSONResponse delete(@RequestBody IdAo ao);
+
+    @Component
+    public class PrFangganFeginFallback implements PrFanganService {
+
+        @Override
+        public JSONResponse queryAll(Map<String, Object> params) {
+            return new JSONResponse(false,"1","远程调用PrFangganService失败了，服务未开启或者方法出问题",null);
+        }
+
+        @Override
+        public JSONResponse list(Map<String, Object> params) {
+            return new JSONResponse(false,"1","远程调用PrFangganService失败了，服务未开启或者方法出问题",null);
+        }
+
+        @Override
+        public JSONResponse select(PrVo vo) {
+            return new JSONResponse(false,"1","远程调用PrFangganService失败了，服务未开启或者方法出问题",null);
+        }
+
+        @Override
+        public JSONResponse info(String id) {
+            return new JSONResponse(false,"1","远程调用PrFangganService失败了，服务未开启或者方法出问题",null);
+        }
+
+        @Override
+        public JSONResponse save(PrFanganEntity prFangan) {
+            return new JSONResponse(false,"1","远程调用PrFangganService失败了，服务未开启或者方法出问题",null);
+        }
+
+        @Override
+        public JSONResponse update(PrFanganEntity prFangan) {
+            return new JSONResponse(false,"1","远程调用PrFangganService失败了，服务未开启或者方法出问题",null);
+        }
+
+        @Override
+        public JSONResponse delete(IdAo ao) {
+            return new JSONResponse(false,"1","远程调用PrFangganService失败了，服务未开启或者方法出问题",null);
+        }
+    }
 }

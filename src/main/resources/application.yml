@@ -14,6 +14,7 @@ spring:
         max-idle: 8
         min-idle: 0
     timeout: 10000
+#    json格式时间处理
   jackson:
     time-zone: GMT+8
     date-format: yyyy-MM-dd HH:mm:ss
@@ -32,17 +33,21 @@ mybatis:
   mapper-locations: classpath*:mapper/*.xml
   type-aliases-package: com.kando.entity
   configuration:
+#    开启小驼峰命名
     map-underscore-to-camel-case: true
 
 #
 feign:
   hystrix:
-    enabled: false
+    enabled: true
 hystrix:
   command:
     default:
       execution:
         isolation:
+          thread:
+            #            超时时间--2S
+            timeoutInMilliseconds: 4000
           strategy: SEMAPHORE
 pagehelper:
   helperDialect: mysql
