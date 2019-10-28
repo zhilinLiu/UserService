@@ -15,13 +15,13 @@
     </select>
 
     <insert id="insertAuth" parameterType="com.kando.entity.Authority">
-        insert into sys_authority(name,description,menu_id,fun_id) values(#{name},#{description},#{menu_id},#{fun_id})
+        insert into sys_authority(name,description,menu_id,fun_id) values(#{name},#{description},#{menuId},#{funId})
     </insert>
     <delete id="deleteAuth" parameterType="java.lang.Integer">
         delete from sys_authority where id=#{id}
     </delete>
     <update id="updateAuth" parameterType="com.kando.entity.Authority">
-        update sys_authority SET name=#{name},description=#{description},menu_id=#{menu_id},fun_id=#{fun_id} where id=#{id}
+        update sys_authority SET name=#{name},description=#{description},menu_id=#{menuId},fun_id=#{funId} where id=#{id}
     </update>
 
 

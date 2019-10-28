@@ -1,5 +1,6 @@
 package com.kando.controller.busController;
 
+import com.kando.ao.IdAo;
 import com.kando.ao.PrProdVo;
 import com.kando.dto.JSONResponse;
 import com.kando.service.fegin.PrProductionService;
@@ -34,6 +35,12 @@ public class PrProductionController {
             log.error("queryAll  -----执行失败.........."+params);
             return new JSONResponse(false,"1","远程调用失败",null);
         }
+    }
+
+    @RequestMapping("/delete")
+    public JSONResponse delete(@RequestBody IdAo ao){
+        log.info("正在执行---------   delete............"+ao);
+        return service.delete(ao);
     }
 
     /**

@@ -84,6 +84,7 @@ public class PrNounController {
             return service.save(prNoun);
         } catch (Exception e) {
             log.error("save  ----执行失败.........."+prNoun);
+            e.printStackTrace();
             return new JSONResponse(false,"1","远程调用失败",null);
         }
     }

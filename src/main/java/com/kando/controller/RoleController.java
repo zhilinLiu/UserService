@@ -1,5 +1,6 @@
 package com.kando.controller;
 
+import com.kando.ao.RoleAo;
 import com.kando.dto.QueryResult;
 import com.kando.entity.Result;
 import com.kando.entity.Role;
@@ -8,6 +9,7 @@ import com.kando.vo.PageVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,7 +69,9 @@ public class RoleController {
     }
     //更新角色，需要传入id,name,description,status
     @RequestMapping(value = "/updateRole",method = RequestMethod.POST)
-    public Result updateRole(@RequestBody Role role){
+    public Result updateRole(@RequestBody RoleAo role1){
+        Role role = new Role();
+        BeanUtils.copyProperties(role1,role);
         log.info("执行更新角色的方法，接受到的参数为"+role);
         Result<Object> result = new Result<>();
         if(service.updateRole(role)){
