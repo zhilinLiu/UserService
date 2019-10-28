@@ -4,6 +4,7 @@ import com.kando.ao.IdAo;
 import com.kando.ao.PrVo;
 import com.kando.dto.JSONResponse;
 import com.kando.entity.busEntity.PrFanganEntity;
+import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
@@ -14,7 +15,7 @@ import java.util.Map;
 /**
  *
  */
-@FeignClient(value = "bus-service",path = "pr/fangan",fallback = PrFanganService.PrFangganFeginFallback.class)
+@FeignClient(value = "bus-service",path = "pr/fangan",fallbackFactory = PrFanganService.PrFangganFeginFallback.class)
 public interface PrFanganService {
     /**
      * 查看所有列表
@@ -84,48 +85,54 @@ public interface PrFanganService {
 
     @Component
     @Slf4j
-    public class PrFangganFeginFallback implements PrFanganService {
+    public class PrFangganFeginFallback implements FallbackFactory<PrFanganService> {
 
         @Override
-        public JSONResponse queryAll(Map<String, Object> params) {
-            log.error("调用服务#{}的#{}方法失败","PrFanggan","queryAll");
-            return new JSONResponse(false,"1","远程调用PrFangganService失败了，服务未开启或者方法出问题",null);
-        }
+        public PrFanganService create(Throwable throwable) {
+            throwable.printStackTrace();
+            return new PrFanganService() {
+                @Override
+                public JSONResponse queryAll(Map<String, Object> params) {
+                    log.error("调用服务#{}的#{}方法失败","PrFanggan","queryAll");
+                    return new JSONResponse(false,"1",throwable.getMessage(),null);
+                }
 
-        @Override
-        public JSONResponse list(Map<String, Object> params) {
-            log.error("调用服务#{}的#{}方法失败","PrFanggan","list");
-            return new JSONResponse(false,"1","远程调用PrFangganService失败了，服务未开启或者方法出问题",null);
-        }
+                @Override
+                public JSONResponse list(Map<String, Object> params) {
+                    log.error("调用服务#{}的#{}方法失败","PrFanggan","list");
+                    return new JSONResponse(false,"1",throwable.getMessage(),null);
+                }
 
-        @Override
-        public JSONResponse select(PrVo vo) {
-            log.error("调用服务#{}的#{}方法失败","PrFanggan","select");
-            return new JSONResponse(false,"1","远程调用PrFangganService失败了，服务未开启或者方法出问题",null);
-        }
+                @Override
+                public JSONResponse select(PrVo vo) {
+                    log.error("调用服务#{}的#{}方法失败","PrFanggan","select");
+                    return new JSONResponse(false,"1",throwable.getMessage(),null);
+                }
 
-        @Override
-        public JSONResponse info(String id) {
-            log.error("调用服务#{}的#{}方法失败","PrFanggan","info");
-            return new JSONResponse(false,"1","远程调用PrFangganService失败了，服务未开启或者方法出问题",null);
-        }
+                @Override
+                public JSONResponse info(String id) {
+                    log.error("调用服务#{}的#{}方法失败","PrFanggan","info");
+                    return new JSONResponse(false,"1",throwable.getMessage(),null);
+                }
 
-        @Override
-        public JSONResponse save(PrFanganEntity prFangan) {
-            log.error("调用服务#{}的#{}方法失败","PrFanggan","save");
-            return new JSONResponse(false,"1","远程调用PrFangganService失败了，服务未开启或者方法出问题",null);
-        }
+                @Override
+                public JSONResponse save(PrFanganEntity prFangan) {
+                    log.error("调用服务#{}的#{}方法失败","PrFanggan","save");
+                    return new JSONResponse(false,"1",throwable.getMessage(),null);
+                }
 
-        @Override
-        public JSONResponse update(PrFanganEntity prFangan) {
-            log.error("调用服务#{}的#{}方法失败","PrFanggan","update");
-            return new JSONResponse(false,"1","远程调用PrFangganService失败了，服务未开启或者方法出问题",null);
-        }
+                @Override
+                public JSONResponse update(PrFanganEntity prFangan) {
+                    log.error("调用服务#{}的#{}方法失败","PrFanggan","update");
+                    return new JSONResponse(false,"1",throwable.getMessage(),null);
+                }
 
-        @Override
-        public JSONResponse delete(IdAo ao) {
-            log.error("调用服务#{}的#{}方法失败","PrFanggan","delete");
-            return new JSONResponse(false,"1","远程调用PrFangganService失败了，服务未开启或者方法出问题",null);
+                @Override
+                public JSONResponse delete(IdAo ao) {
+                    log.error("调用服务#{}的#{}方法失败","PrFanggan","delete");
+                    return new JSONResponse(false,"1",throwable.getMessage(),null);
+                }
+            };
         }
     }
 }

@@ -3,6 +3,7 @@ package com.kando.service.fegin;
 import com.kando.ao.IdAo;
 import com.kando.dto.JSONResponse;
 import com.kando.entity.busEntity.PrNounEntity;
+import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
@@ -13,7 +14,7 @@ import java.util.Map;
 /**
  *
  */
-@FeignClient(value = "bus-service", path = "pr/noun",fallback = PrNounService.PrNounFallback.class)
+@FeignClient(value = "bus-service", path = "pr/noun",fallbackFactory = PrNounService.PrNounFallback.class)
 public interface PrNounService {
     /**
      * 查看所有列表
@@ -71,42 +72,49 @@ public interface PrNounService {
 
     @Component
     @Slf4j
-    public class PrNounFallback implements PrNounService {
+    public class PrNounFallback implements FallbackFactory<PrNounService> {
+
 
         @Override
-        public JSONResponse queryAll(Map<String, Object> params) {
-            log.error("调用服务#{}的#{}方法失败","PrNoun","queryAll");
-            return new JSONResponse(false,"1","远程调用PrNounService失败了，服务未开启或者方法出问题",null);
-        }
+        public PrNounService create(Throwable throwable) {
+            throwable.printStackTrace();
+            return new PrNounService() {
+                @Override
+                public JSONResponse queryAll(Map<String, Object> params) {
+                    log.error("调用服务#{}的#{}方法失败","PrNoun","queryAll");
+                    return new JSONResponse(false,"1",throwable.getMessage(),null);
+                }
 
-        @Override
-        public JSONResponse list(Map<String, Object> params) {
-            log.error("调用服务#{}的#{}方法失败","PrNoun","list");
-            return new JSONResponse(false,"1","远程调用PrNounService失败了，服务未开启或者方法出问题",null);
-        }
+                @Override
+                public JSONResponse list(Map<String, Object> params) {
+                    log.error("调用服务#{}的#{}方法失败","PrNoun","list");
+                    return new JSONResponse(false,"1",throwable.getMessage(),null);
+                }
 
-        @Override
-        public JSONResponse info(String id) {
-            log.error("调用服务#{}的#{}方法失败","PrNoun","info");
-            return new JSONResponse(false,"1","远程调用PrNounService失败了，服务未开启或者方法出问题",null);
-        }
+                @Override
+                public JSONResponse info(String id) {
+                    log.error("调用服务#{}的#{}方法失败","PrNoun","info");
+                    return new JSONResponse(false,"1",throwable.getMessage(),null);
+                }
 
-        @Override
-        public JSONResponse save(PrNounEntity prNoun) {
-            log.error("调用服务#{}的#{}方法失败","PrNoun","save");
-            return new JSONResponse(false,"1","远程调用PrNounService失败了，服务未开启或者方法出问题",null);
-        }
+                @Override
+                public JSONResponse save(PrNounEntity prNoun) {
+                    log.error("调用服务#{}的#{}方法失败","PrNoun","save");
+                    return new JSONResponse(false,"1",throwable.getMessage(),null);
+                }
 
-        @Override
-        public JSONResponse update(PrNounEntity prNoun) {
-            log.error("调用服务#{}的#{}方法失败","PrNoun","update");
-            return new JSONResponse(false,"1","远程调用PrNounService失败了，服务未开启或者方法出问题",null);
-        }
+                @Override
+                public JSONResponse update(PrNounEntity prNoun) {
+                    log.error("调用服务#{}的#{}方法失败","PrNoun","update");
+                    return new JSONResponse(false,"1",throwable.getMessage(),null);
+                }
 
-        @Override
-        public JSONResponse delete(IdAo ao) {
-            log.error("调用服务#{}的#{}方法失败","PrNoun","delete");
-            return new JSONResponse(false,"1","远程调用PrNounService失败了，服务未开启或者方法出问题",null);
+                @Override
+                public JSONResponse delete(IdAo ao) {
+                    log.error("调用服务#{}的#{}方法失败","PrNoun","delete");
+                    return new JSONResponse(false,"1",throwable.getMessage(),null);
+                }
+            };
         }
     }
 }

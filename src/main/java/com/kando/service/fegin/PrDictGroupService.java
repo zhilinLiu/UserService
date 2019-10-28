@@ -3,6 +3,7 @@ package com.kando.service.fegin;
 import com.kando.ao.IdAo;
 import com.kando.dto.JSONResponse;
 import com.kando.entity.busEntity.PrDictGroupEntity;
+import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
@@ -13,7 +14,7 @@ import java.util.Map;
 /**
  *
  */
-@FeignClient(value = "bus-service",path = "pr/dictgroup",fallback = PrDictGroupService.PrDictGroupFegin.class)
+@FeignClient(value = "bus-service",path = "pr/dictgroup",fallbackFactory = PrDictGroupService.PrDictGroupFegin.class)
 public interface PrDictGroupService {
     /**
      * 查看所有列表
@@ -71,42 +72,48 @@ public interface PrDictGroupService {
 
     @Component
     @Slf4j
-    public class PrDictGroupFegin implements PrDictGroupService {
-        private Class thisClass = this.getClass();
-        @Override
-        public JSONResponse queryAll(Map<String, Object> params) {
-            log.error("调用服务#{}的#{}方法失败","PrDictGroup","queryAll");
-            return new JSONResponse(false,"1","远程调用服务未开启",null);
-    }
+    public class PrDictGroupFegin implements FallbackFactory<PrDictGroupService> {
 
         @Override
-        public JSONResponse list(Map<String, Object> params) {
-            log.error("调用服务#{}的#{}方法失败",thisClass.getName(),"list");
-            return new JSONResponse(false,"1","远程调用服务未开启",null);
-        }
+        public PrDictGroupService create(Throwable throwable) {
+            throwable.printStackTrace();
+            return new PrDictGroupService() {
+                @Override
+                public JSONResponse queryAll(Map<String, Object> params) {
+                    log.error("调用服务#{}的#{}方法失败","PrDictGroup","queryAll");
+                    return new JSONResponse(false,"1",throwable.getMessage(),null);
+                }
 
-        @Override
-        public JSONResponse info(String id) {
-            log.error("调用服务#{}的#{}方法失败",thisClass.getName(),"info");
-            return new JSONResponse(false,"1","远程调用服务未开启",null);
-        }
+                @Override
+                public JSONResponse list(Map<String, Object> params) {
+                    log.error("调用服务#{}的#{}方法失败","PrDictGroup","list");
+                    return new JSONResponse(false,"1",throwable.getMessage(),null);
+                }
 
-        @Override
-        public JSONResponse save(PrDictGroupEntity prDictGroup) {
-            log.error("调用服务#{}的#{}方法失败",thisClass.getName(),"save");
-            return new JSONResponse(false,"1","远程调用服务未开启",null);
-        }
+                @Override
+                public JSONResponse info(String id) {
+                    log.error("调用服务#{}的#{}方法失败","PrDictGroup","info");
+                    return new JSONResponse(false,"1",throwable.getMessage(),null);
+                }
 
-        @Override
-        public JSONResponse update(PrDictGroupEntity prDictGroup) {
-            log.error("调用服务#{}的#{}方法失败",thisClass.getName(),"update");
-            return new JSONResponse(false,"1","远程调用服务未开启",null);
-        }
+                @Override
+                public JSONResponse save(PrDictGroupEntity prDictGroup) {
+                    log.error("调用服务#{}的#{}方法失败","PrDictGroup","save");
+                    return new JSONResponse(false,"1",throwable.getMessage(),null);
+                }
 
-        @Override
-        public JSONResponse delete(IdAo ao) {
-            log.error("调用服务#{}的#{}方法失败",thisClass.getName(),"delete");
-            return new JSONResponse(false,"1","远程调用服务未开启",null);
+                @Override
+                public JSONResponse update(PrDictGroupEntity prDictGroup) {
+                    log.error("调用服务#{}的#{}方法失败","PrDictGroup","update");
+                    return new JSONResponse(false,"1",throwable.getMessage(),null);
+                }
+
+                @Override
+                public JSONResponse delete(IdAo ao) {
+                    log.error("调用服务#{}的#{}方法失败","PrDictGroup","delete");
+                    return new JSONResponse(false,"1",throwable.getMessage(),null);
+                }
+            };
         }
     }
 }

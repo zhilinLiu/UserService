@@ -108,13 +108,13 @@ public class PrDictController {
      *
      * @return JSONResponse
      */
-    @RequestMapping("/delete")
-    public JSONResponse delete(@RequestBody IdAo ao) {
+    @RequestMapping("/delete/{id}")
+    public JSONResponse delete(@PathVariable("id") String id) {
         try {
-            log.info("正在执行-------   delete............"+ao);
-            return service.delete(ao);
+            log.info("正在执行-------   delete............"+id);
+            return service.delete(id);
         } catch (Exception e) {
-            log.error("delete  ----执行失败.........."+ao);
+            log.error("delete  ----执行失败.........."+id);
             return new JSONResponse(false,"1","远程调用失败",null);
         }
     }
