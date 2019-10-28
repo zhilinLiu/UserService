@@ -3,6 +3,7 @@ package com.kando.service.fegin;
 import com.kando.ao.IdAo;
 import com.kando.dto.JSONResponse;
 import com.kando.entity.busEntity.PrDictGroupEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
@@ -69,35 +70,42 @@ public interface PrDictGroupService {
 
 
     @Component
+    @Slf4j
     public class PrDictGroupFegin implements PrDictGroupService {
-
+        private Class thisClass = this.getClass();
         @Override
         public JSONResponse queryAll(Map<String, Object> params) {
+            log.error("调用服务#{}的#{}方法失败","PrDictGroup","queryAll");
             return new JSONResponse(false,"1","远程调用服务未开启",null);
     }
 
         @Override
         public JSONResponse list(Map<String, Object> params) {
+            log.error("调用服务#{}的#{}方法失败",thisClass.getName(),"list");
             return new JSONResponse(false,"1","远程调用服务未开启",null);
         }
 
         @Override
         public JSONResponse info(String id) {
+            log.error("调用服务#{}的#{}方法失败",thisClass.getName(),"info");
             return new JSONResponse(false,"1","远程调用服务未开启",null);
         }
 
         @Override
         public JSONResponse save(PrDictGroupEntity prDictGroup) {
+            log.error("调用服务#{}的#{}方法失败",thisClass.getName(),"save");
             return new JSONResponse(false,"1","远程调用服务未开启",null);
         }
 
         @Override
         public JSONResponse update(PrDictGroupEntity prDictGroup) {
+            log.error("调用服务#{}的#{}方法失败",thisClass.getName(),"update");
             return new JSONResponse(false,"1","远程调用服务未开启",null);
         }
 
         @Override
         public JSONResponse delete(IdAo ao) {
+            log.error("调用服务#{}的#{}方法失败",thisClass.getName(),"delete");
             return new JSONResponse(false,"1","远程调用服务未开启",null);
         }
     }

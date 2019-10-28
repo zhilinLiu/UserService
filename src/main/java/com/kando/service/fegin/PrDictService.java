@@ -3,6 +3,7 @@ package com.kando.service.fegin;
 import com.kando.ao.IdAo;
 import com.kando.dto.JSONResponse;
 import com.kando.entity.busEntity.PrDictEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
@@ -75,40 +76,48 @@ public interface PrDictService {
 
 
     @Component
+    @Slf4j
     public class PrDictFallback implements PrDictService {
 
         @Override
         public JSONResponse queryAll(Map<String, Object> params) {
+            log.error("调用服务#{}的#{}方法失败","PrDict","queryAll");
             return new JSONResponse(false,"1","远程调用PrDictService失败了，服务未开启或者方法出问题",null);
         }
 
         @Override
         public JSONResponse list(Map<String, Object> params) {
+            log.error("调用服务#{}的#{}方法失败","PrDict","list");
             return new JSONResponse(false,"1","远程调用PrDictService失败了，服务未开启或者方法出问题",null);
         }
 
         @Override
         public JSONResponse info(String id) {
+            log.error("调用服务#{}的#{}方法失败","PrDict","info");
             return new JSONResponse(false,"1","远程调用PrDictService失败了，服务未开启或者方法出问题",null);
         }
 
         @Override
         public JSONResponse save(PrDictEntity prDict) {
+            log.error("调用服务#{}的#{}方法失败","PrDict","save");
             return new JSONResponse(false,"1","远程调用PrDictService失败了，服务未开启或者方法出问题",null);
         }
 
         @Override
         public JSONResponse update(PrDictEntity prDict) {
+            log.error("调用服务#{}的#{}方法失败","PrDict","update");
             return new JSONResponse(false,"1","远程调用PrDictService失败了，服务未开启或者方法出问题",null);
         }
 
         @Override
         public JSONResponse delete(IdAo ao) {
+            log.error("调用服务#{}的#{}方法失败","PrDict","delete");
             return new JSONResponse(false,"1","远程调用PrDictService失败了，服务未开启或者方法出问题",null);
         }
 
         @Override
         public JSONResponse queryByCode(Map<String, Object> params) {
+            log.error("调用服务#{}的#{}方法失败","PrDict","queryByCode");
             return new JSONResponse(false,"1","远程调用PrDictService失败了，服务未开启或者方法出问题",null);
         }
     }

@@ -4,6 +4,7 @@ import com.kando.ao.IdAo;
 import com.kando.ao.PrVo;
 import com.kando.dto.JSONResponse;
 import com.kando.entity.busEntity.PrFanganEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
@@ -82,40 +83,48 @@ public interface PrFanganService {
     public JSONResponse delete(@RequestBody IdAo ao);
 
     @Component
+    @Slf4j
     public class PrFangganFeginFallback implements PrFanganService {
 
         @Override
         public JSONResponse queryAll(Map<String, Object> params) {
+            log.error("调用服务#{}的#{}方法失败","PrFanggan","queryAll");
             return new JSONResponse(false,"1","远程调用PrFangganService失败了，服务未开启或者方法出问题",null);
         }
 
         @Override
         public JSONResponse list(Map<String, Object> params) {
+            log.error("调用服务#{}的#{}方法失败","PrFanggan","list");
             return new JSONResponse(false,"1","远程调用PrFangganService失败了，服务未开启或者方法出问题",null);
         }
 
         @Override
         public JSONResponse select(PrVo vo) {
+            log.error("调用服务#{}的#{}方法失败","PrFanggan","select");
             return new JSONResponse(false,"1","远程调用PrFangganService失败了，服务未开启或者方法出问题",null);
         }
 
         @Override
         public JSONResponse info(String id) {
+            log.error("调用服务#{}的#{}方法失败","PrFanggan","info");
             return new JSONResponse(false,"1","远程调用PrFangganService失败了，服务未开启或者方法出问题",null);
         }
 
         @Override
         public JSONResponse save(PrFanganEntity prFangan) {
+            log.error("调用服务#{}的#{}方法失败","PrFanggan","save");
             return new JSONResponse(false,"1","远程调用PrFangganService失败了，服务未开启或者方法出问题",null);
         }
 
         @Override
         public JSONResponse update(PrFanganEntity prFangan) {
+            log.error("调用服务#{}的#{}方法失败","PrFanggan","update");
             return new JSONResponse(false,"1","远程调用PrFangganService失败了，服务未开启或者方法出问题",null);
         }
 
         @Override
         public JSONResponse delete(IdAo ao) {
+            log.error("调用服务#{}的#{}方法失败","PrFanggan","delete");
             return new JSONResponse(false,"1","远程调用PrFangganService失败了，服务未开启或者方法出问题",null);
         }
     }
