@@ -29,7 +29,7 @@ public class OrgCotroller {
     * @return PageInfo<Organization>    返回类型  
     * @throws  
     */ 
-    @CrossOrigin
+    
 	@RequestMapping(value = "/selectOrg", method = RequestMethod.POST)
 	public  Result selectOrg(@RequestBody PageVo pageVo) {
     	Result result = new Result();
@@ -48,7 +48,7 @@ public class OrgCotroller {
     * @return Map<String,Object>    返回类型  
     * @throws  
     */ 
-    @CrossOrigin
+    
 	@RequestMapping(value = "/deleteOrg", method = RequestMethod.POST)
 	public  Result deleteOrg(@RequestBody Organization organization) {
     	Result result = new Result();
@@ -71,7 +71,7 @@ public class OrgCotroller {
     * @return Organization   返回类型  
     * @throws  
     */ 
-    @CrossOrigin
+    
 	@RequestMapping(value = "/updateOrg", method = RequestMethod.POST)
 	public  Result updateOrg(@RequestBody Organization organization) {
     	Result result = new Result();
@@ -89,7 +89,7 @@ public class OrgCotroller {
     * @return Map<String, Object>    返回类型  
     * @throws  
     */ 
-    @CrossOrigin
+    
 	@RequestMapping(value = "/updateOrg1", method = RequestMethod.POST)
 	public  Result updateOrg1(@RequestBody Organization organization) {
     	Result result = new Result();
@@ -107,7 +107,7 @@ public class OrgCotroller {
     * @return Map<String,Object>   返回类型  
     * @throws  
     */ 
-    @CrossOrigin
+    
 	@RequestMapping(value = "/insertOrg", method = RequestMethod.POST)
 	public  Result insertOrg(@RequestBody Organization organization) {
     	Result result = new Result();

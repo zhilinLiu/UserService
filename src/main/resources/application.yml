@@ -33,7 +33,6 @@ mybatis:
   mapper-locations: classpath*:mapper/*.xml
   type-aliases-package: com.kando.entity
   configuration:
-#    开启小驼峰命名
     map-underscore-to-camel-case: true
 
 #

@@ -1,4 +1,4 @@
-package com.kando.mapper;
+package com.kando.dao;
 
 import com.kando.entity.SysLogEntity;
 import org.apache.ibatis.annotations.Param;

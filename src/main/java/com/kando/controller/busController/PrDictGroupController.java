@@ -32,11 +32,11 @@ public class PrDictGroupController {
     @RequestMapping("/all")
     public JSONResponse queryAll(@RequestParam Map<String, Object> params) {
         try {
-            log.info("is doing queryAll..........");
+            log.info("is doing queryAll.........."+params);
             return prDictGroupService.queryAll(params);
 
         } catch (Exception e) {
-            log.error("queryAll failed............");
+            log.error("queryAll failed............"+params);
             return new JSONResponse(false,"1","远程调用失败",null);
         }
 
@@ -51,11 +51,11 @@ public class PrDictGroupController {
     @GetMapping("/page")
     public JSONResponse list(@RequestParam Map<String, Object> params) {
         try {
-            log.info("is doing list..........");
+            log.info("is doing list.........."+params);
             return prDictGroupService.list(params);
 
         } catch (Exception e) {
-            log.error("list failed............");
+            log.error("list failed............"+params);
              return new JSONResponse(false,"1","远程调用失败",null);
         }
     }
@@ -69,10 +69,10 @@ public class PrDictGroupController {
     @RequestMapping("/info/{id}")
     public JSONResponse info(@PathVariable("id") String id) {
         try {
-            log.info("is doing info..........");
+            log.info("is doing info.........."+id);
         return prDictGroupService.info(id);
         } catch (Exception e) {
-            log.error("info failed............");
+            log.error("info failed............"+id);
              return new JSONResponse(false,"1","远程调用失败",null);
         }
     }
@@ -86,11 +86,11 @@ public class PrDictGroupController {
     @RequestMapping("/save")
     public JSONResponse save(@RequestBody PrDictGroupEntity prDictGroup) {
         try {
-            log.info("is doing save..........");
+            log.info("is doing save.........."+prDictGroup);
             return prDictGroupService.save(prDictGroup);
 
         } catch (Exception e) {
-            log.error("save failed............");
+            log.error("save failed............"+prDictGroup);
              return new JSONResponse(false,"1","远程调用失败",null);
         }
     }
@@ -104,11 +104,11 @@ public class PrDictGroupController {
     @RequestMapping("/update")
     public JSONResponse update(@RequestBody PrDictGroupEntity prDictGroup) {
         try {
-            log.info("is doing update..........");
+            log.info("is doing update.........."+prDictGroup);
             return prDictGroupService.update(prDictGroup);
 
         } catch (Exception e) {
-            log.error("update failed............");
+            log.error("update failed............"+prDictGroup);
              return new JSONResponse(false,"1","远程调用失败",null);
         }
     }
@@ -121,11 +121,11 @@ public class PrDictGroupController {
     @RequestMapping("/delete")
     public JSONResponse delete(@RequestBody IdAo ao) {
         try {
-            log.info("is doing delete..........");
+            log.info("is doing delete.........."+ao);
             return prDictGroupService.delete(ao);
 
         } catch (Exception e) {
-            log.error("delete failed............");
+            log.error("delete failed............"+ao);
              return new JSONResponse(false,"1","远程调用失败",null);
         }
     }

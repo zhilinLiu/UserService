@@ -4,8 +4,8 @@
 	<resultMap id="OrgResultMap" type="com.kando.entity.Organization">
         <id column="id" property="id" jdbcType="INTEGER" />
         <result column="name" property="name" jdbcType="VARCHAR" />
-        <result column="org_id" property="org_id" jdbcType="VARCHAR" />
-        <result column="create_time" property="create_time" jdbcType="TIMESTAMP" />
+        <result column="org_id"  property="orgId" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
         <result column="status" property="status" jdbcType="INTEGER" />
     </resultMap>
     
@@ -24,12 +24,13 @@
     <select id="selectAll"
     resultType="com.kando.entity.Organization">
         select
-        <include refid="Org_Column_List" />
-        from sys_org 
-        where 1=1
+            <include refid="Org_Column_List" />
+        from sys_org
+        <where>
         <if test="Key!=null and Key!=''">
            and name like CONCAT('%',#{Key,jdbcType=VARCHAR},'%')
         </if>
+        </where>
     </select>
     
     <update id="update" parameterType="com.kando.entity.Organization">
@@ -41,11 +42,11 @@
       <if test="name != null" >
         name = #{name,jdbcType=VARCHAR},
       </if>
-      <if test="org_id != null" >
-        org_id = #{org_id,jdbcType=VARCHAR},
+      <if test="orgId != null" >
+        org_id = #{orgId,jdbcType=VARCHAR},
       </if>
-      <if test="create_time != null" >
-        create_time = #{create_time,jdbcType=TIMESTAMP},
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
       <if test="status != null" >
         status = #{status,jdbcType=INTEGER},
@@ -60,8 +61,8 @@
 	
 	<insert id="insertOrg" parameterType="com.kando.entity.Organization">
 	insert into sys_org(id,name,org_id,create_time,status)
-	values(#{id,jdbcType=INTEGER},#{name,jdbcType=VARCHAR},#{org_id,jdbcType=VARCHAR},
-	#{create_time,jdbcType=TIMESTAMP},#{status,jdbcType=INTEGER})
+	values(#{id,jdbcType=INTEGER},#{name,jdbcType=VARCHAR},#{orgId,jdbcType=VARCHAR},
+	#{createTime,jdbcType=TIMESTAMP},#{status,jdbcType=INTEGER})
 	</insert>
 	
 </mapper>

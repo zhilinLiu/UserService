@@ -46,10 +46,10 @@ public class PrDictController {
     @GetMapping("/page")
     public JSONResponse list(@RequestParam Map<String, Object> params) {
         try {
-            log.info("正在执行-------   list............");
+            log.info("正在执行-------   list............"+params);
             return service.list(params);
         } catch (Exception e) {
-            log.error("list  ----执行失败..........");
+            log.error("list  ----执行失败.........."+params);
             return new JSONResponse(false,"1","远程调用失败",null);
         }
     }
@@ -63,10 +63,10 @@ public class PrDictController {
     @RequestMapping("/info/{id}")
     public JSONResponse info(@PathVariable("id") String id) {
         try {
-            log.info("正在执行-------   info............");
+            log.info("正在执行-------   info............"+id);
             return service.info(id);
         } catch (Exception e) {
-            log.error("info  ----执行失败..........");
+            log.error("info  ----执行失败.........."+id);
             return new JSONResponse(false,"1","远程调用失败",null);
         }
     }
@@ -79,10 +79,10 @@ public class PrDictController {
     @RequestMapping("/save")
     public JSONResponse save(@RequestBody PrDictEntity prDict) {
         try {
-            log.info("正在执行-------   save............");
+            log.info("正在执行-------   save............"+prDict);
             return service.save(prDict);
         } catch (Exception e) {
-            log.error("save  ----执行失败..........");
+            log.error("save  ----执行失败.........."+prDict);
             return new JSONResponse(false,"1","远程调用失败",null);
         }
     }
@@ -95,10 +95,10 @@ public class PrDictController {
     @RequestMapping("/update")
     public JSONResponse update(@RequestBody PrDictEntity prDict) {
         try {
-            log.info("正在执行-------   update............");
+            log.info("正在执行-------   update............"+prDict);
             return service.update(prDict);
         } catch (Exception e) {
-            log.error("update  ----执行失败..........");
+            log.error("update  ----执行失败.........."+prDict);
             return new JSONResponse(false,"1","远程调用失败",null);
         }
     }
@@ -111,10 +111,10 @@ public class PrDictController {
     @RequestMapping("/delete")
     public JSONResponse delete(@RequestBody IdAo ao) {
         try {
-            log.info("正在执行-------   delete............");
+            log.info("正在执行-------   delete............"+ao);
             return service.delete(ao);
         } catch (Exception e) {
-            log.error("delete  ----执行失败..........");
+            log.error("delete  ----执行失败.........."+ao);
             return new JSONResponse(false,"1","远程调用失败",null);
         }
     }
@@ -128,10 +128,10 @@ public class PrDictController {
     @RequestMapping("/queryByCode")
     public JSONResponse queryByCode(@RequestParam Map<String, Object> params) {
         try {
-            log.info("正在执行-------   queryByCode............");
+            log.info("正在执行-------   queryByCode............"+params);
             return service.queryByCode(params);
         } catch (Exception e) {
-            log.error("queryByCode  ----执行失败..........");
+            log.error("queryByCode  ----执行失败.........."+params);
             return new JSONResponse(false,"1","远程调用失败",null);
         }
     }

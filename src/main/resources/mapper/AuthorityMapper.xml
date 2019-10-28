@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.kando.mapper.AuthorityDao">
+<mapper namespace="com.kando.dao.AuthorityDao">
 
     <select id="selectAll" resultMap="AuthorityMap">
 		select * from sys_authority
@@ -30,7 +30,7 @@
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="description" property="description"/>
-        <result column="menu_id" property="menu_id"/>
-        <result column="fun_id" property="fun_id"/>
+        <result column="menuId" property="menu_id"/>
+        <result column="funId" property="fun_id"/>
     </resultMap>
 </mapper>

@@ -1,5 +1,6 @@
 package com.kando.configuration;
-import com.kando.entity.Role;
+import com.kando.dao.UserDao;
+import com.kando.entity.User;
 import com.kando.service.impl.RoleServiceImpl;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -10,20 +11,16 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.kando.entity.User;
-import com.kando.mapper.UserDao;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 @Component
 public class MyRealm extends AuthorizingRealm {
 	@Autowired
     private RoleServiceImpl authorityService;
 	@Autowired
-	UserDao userDao;
+    UserDao userDao;
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         //获取登录名 -- 前端传过来的

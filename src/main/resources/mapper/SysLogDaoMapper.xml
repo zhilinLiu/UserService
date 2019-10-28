@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.kando.mapper.SysLogDao">
+<mapper namespace="com.kando.dao.SysLogDao">
     <insert id="insert">
   		insert into sys_log(
   		id,user_name,operation,method,params,

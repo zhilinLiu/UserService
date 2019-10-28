@@ -3,14 +3,11 @@ package com.kando.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.kando.dto.QueryResult;
-import com.kando.entity.Authority;
 import com.kando.entity.Role;
-import com.kando.mapper.RoleDao;
+import com.kando.dao.RoleDao;
 import com.kando.service.RoleService;
-import com.kando.util.AuthCode;
 import com.kando.vo.PageVo;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,9 +44,9 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public boolean inserRole(Role role) {
-        if(!StringUtils.isNotEmpty(role.getCreate_user_id())){
+        if(!StringUtils.isNotEmpty(role.getCreateUserId())){
             //赋予默认值
-            role.setCreate_user_id("default");
+            role.setCreateUserId("default");
         }
         return roleDao.inserRole(role);
     }

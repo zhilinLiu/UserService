@@ -72,6 +72,8 @@ public interface PrDictService {
     public JSONResponse queryByCode(@RequestParam Map<String, Object> params);
 
 
+
+
     @Component
     public class PrDictFallback implements PrDictService {
 

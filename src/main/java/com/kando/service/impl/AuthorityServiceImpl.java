@@ -1,12 +1,10 @@
 package com.kando.service.impl;
 
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.kando.dto.JSONResponse;
 import com.kando.dto.QueryResult;
 import com.kando.entity.Authority;
-import com.kando.mapper.AuthorityDao;
+import com.kando.dao.AuthorityDao;
 import com.kando.service.AuthorityService;
 import com.kando.vo.PageVo;
 import org.springframework.beans.factory.annotation.Autowired;

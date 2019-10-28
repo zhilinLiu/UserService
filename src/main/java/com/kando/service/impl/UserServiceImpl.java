@@ -151,7 +151,7 @@ public class UserServiceImpl implements UserService {
 			String phone = user.getPhone();
 			String seccode1 = redis.opsForValue().get(phone);
 			String seccode = user.getSeccode();
-			String user_name = user.getUser_name();
+			String user_name = user.getUserName();
 			String password = user.getPassword();
 			String role = user.getRole();
 			Integer sex = user.getSex();
@@ -161,10 +161,10 @@ public class UserServiceImpl implements UserService {
 					User user1 = new User();
 					user1.setPhone(phone);
 					user1.setSex(sex);
-					user1.setUser_name(user_name);
+					user1.setUserName(user_name);
 					user1.setPassword(password);
 					TestDate date = new TestDate();
-					user1.setCreate_time(date.getDate());
+					user1.setCreateTime(date.getDate());
 					userDao.index(user1);
 //					//添加默认角色--访客
 //					if (role.equals("1")){
@@ -198,6 +198,7 @@ public class UserServiceImpl implements UserService {
 				if (ObjectUtils.isEmpty(userDao.selectByemail(email))) {
 					String seccode = Random.getRandom();
 					redis.opsForValue().set(email, seccode, 5, TimeUnit.MINUTES);
+					System.out.println(seccode);
 					result.setCode(0);
                     result.setMessage("验证码发送成功");
                     result.setSuccess(true);
@@ -272,6 +273,7 @@ public class UserServiceImpl implements UserService {
 			Integer pageSize = pageVo.getLimit();
 			PageHelper.startPage(pageNum, pageSize);
 			String Key = pageVo.getKey();
+		 	System.out.println(Key);
 			List<User> user1 = userDao.selectAll(Key);
 			PageInfo<User> pageInfo= new PageInfo<User>(user1);
 			return pageInfo;
@@ -300,7 +302,7 @@ public class UserServiceImpl implements UserService {
 	public Boolean updateUser (User user) {
 			Boolean bool = false;
 			User user1 = new User();
-			user1.setUser_name(user.getUser_name());
+			user1.setUserName(user.getUserName());
 			user1.setPassword(user.getPassword());
 			user1.setPhone(user.getPhone());
 			user1.setSex(user.getSex());

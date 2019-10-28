@@ -1,8 +1,6 @@
-package com.kando.mapper;
+package com.kando.dao;
 
 import com.kando.entity.Role;
-import com.kando.entity.User;
-import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 

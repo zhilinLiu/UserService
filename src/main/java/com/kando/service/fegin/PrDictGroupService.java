@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  *
  */
-@FeignClient(value = "bus-service",path = "pr/dict",fallback = PrDictGroupService.PrDictGroupFegin.class)
+@FeignClient(value = "bus-service",path = "pr/dictgroup",fallback = PrDictGroupService.PrDictGroupFegin.class)
 public interface PrDictGroupService {
     /**
      * 查看所有列表

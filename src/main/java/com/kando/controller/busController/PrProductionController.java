@@ -28,10 +28,10 @@ public class PrProductionController {
     @RequestMapping("/all")
     public JSONResponse queryAll(@RequestParam Map<String, Object> params){
         try {
-            log.info("正在执行---------   queryAll............");
+            log.info("正在执行---------   queryAll............"+params);
             return service.queryAll(params);
         } catch (Exception e) {
-            log.error("queryAll  -----执行失败..........");
+            log.error("queryAll  -----执行失败.........."+params);
             return new JSONResponse(false,"1","远程调用失败",null);
         }
     }
@@ -45,10 +45,10 @@ public class PrProductionController {
     @GetMapping("/page")
     public JSONResponse list(@RequestParam Map<String, Object> params){
         try {
-            log.info("正在执行---------   list............");
+            log.info("正在执行---------   list............"+params);
             return service.list(params);
         } catch (Exception e) {
-            log.error("list  -----执行失败..........");
+            log.error("list  -----执行失败.........."+params);
             return new JSONResponse(false,"1","远程调用失败",null);
         }
     }
@@ -62,10 +62,10 @@ public class PrProductionController {
     @RequestMapping("/info/{id}")
     public JSONResponse info(@PathVariable("id") String id){
         try {
-            log.info("正在执行---------   info............");
+            log.info("正在执行---------   info............"+id);
             return service.info(id);
         } catch (Exception e) {
-            log.error("info  -----执行失败..........");
+            log.error("info  -----执行失败.........."+id);
             return new JSONResponse(false,"1","远程调用失败",null);
         }
     }
@@ -79,10 +79,10 @@ public class PrProductionController {
     @RequestMapping("/save")
     public JSONResponse save(@RequestBody PrProdVo vo){
         try {
-            log.info("正在执行---------   save............");
+            log.info("正在执行---------   save............"+vo);
             return service.save(vo);
         } catch (Exception e) {
-            log.error("save  -----执行失败..........");
+            log.error("save  -----执行失败.........."+vo);
             return new JSONResponse(false,"1","远程调用失败",null);
         }
     }
@@ -96,10 +96,10 @@ public class PrProductionController {
     @RequestMapping("/update")
     public JSONResponse update(@RequestBody PrProdVo vo){
         try {
-            log.info("正在执行---------   update............");
+            log.info("正在执行---------   update............"+vo);
             return service.update(vo);
         } catch (Exception e) {
-            log.error("update  -----执行失败..........");
+            log.error("update  -----执行失败.........."+vo);
             return new JSONResponse(false,"1","远程调用失败",null);
         }
     }

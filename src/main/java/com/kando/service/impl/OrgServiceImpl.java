@@ -29,6 +29,7 @@ public class OrgServiceImpl implements OrgService {
 			Integer pageSize = pageVo.getLimit();
 			PageHelper.startPage(pageNum, pageSize);
 			List<Organization> organization = orgDao.selectAll(Key);
+			organization.stream().forEach(x-> System.out.println(x));
 			PageInfo<Organization> pageInfo= new PageInfo<Organization>(organization);
 			return pageInfo;
 	}
@@ -77,7 +78,7 @@ public class OrgServiceImpl implements OrgService {
 			Organization organization1 = new Organization();
 			organization1.setId(organization.getId());
 			organization1.setName(organization.getName());
-			organization1.setOrg_id(organization.getOrg_id());
+			organization1.setOrgId(organization.getOrgId());
 			organization1.setStatus(organization.getStatus());
 			orgDao.update(organization);
 			return bool;
@@ -94,9 +95,9 @@ public class OrgServiceImpl implements OrgService {
 		Boolean bool= false;
 		TestDate date = new TestDate();
 		Organization organization1 = new Organization();
-		organization1.setCreate_time(date.getDate());
+		organization1.setCreateTime(date.getDate());
 		organization1.setName(organization.getName());
-		organization1.setOrg_id(organization.getOrg_id());
+		organization1.setOrgId(organization.getOrgId());
 		organization1.setStatus(organization.getStatus());
 		if(orgDao.insertOrg(organization)>0) {
 			bool = true;

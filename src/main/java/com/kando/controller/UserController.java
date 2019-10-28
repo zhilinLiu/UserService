@@ -38,8 +38,7 @@ public class UserController {
 	* @Description: TODO(登陆操作-用户名密码)  
 	* @param  map  参数  
 	* @return Map<String,Object>    返回类型  
-	*/ 
-	@CrossOrigin
+	*/
 	@RequestMapping(value = "/loginByPwd", method = RequestMethod.POST)
 	public Result loginByPwd(@RequestBody User user) {
 		userService.loginByPwd(user);
@@ -56,7 +55,7 @@ public class UserController {
 	* @param  map 参数  
 	* @return Map<String,Object>    返回类型  
 	*/ 
-	@CrossOrigin
+
 	@RequestMapping(value = "/loginByCode", method = RequestMethod.POST)
 	public Result loginByCode(@RequestBody @Validated User user) {
 		Result result = new Result();
@@ -72,7 +71,7 @@ public class UserController {
 	* @param   map 参数  
 	* @return Map<String,Object>    返回类型  
 	*/ 
-	@CrossOrigin
+
 	@RequestMapping(value = "/loginCheckCode", method = RequestMethod.POST)
 	public Result checkCode(@RequestBody @Validated User user) {
 		Result result = new Result();
@@ -89,7 +88,7 @@ public class UserController {
 	* @return Map<String,Object>    返回类型  
 	* @throws  
 	*/ 
-	@CrossOrigin
+
 	@RequestMapping(value = "/indexByCode", method = RequestMethod.GET)
 	public Result indexByCode(String phone) {
 		Result result = new Result();
@@ -110,7 +109,7 @@ public class UserController {
 	* @return Map<String,Object>    返回类型  
 	* @throws  
 	*/ 
-	@CrossOrigin
+
 	@RequestMapping(value = "/indexCheckCode", method = RequestMethod.POST)
 	public Result indexCheckCode(@RequestBody  User user) {
 		Result result = new Result();
@@ -127,7 +126,7 @@ public class UserController {
 	* @return Map<String,Object>    返回类型  
 	* @throws  
 	*/ 
-	@CrossOrigin
+
 	@RequestMapping(value = "/indexBindEmail", method = RequestMethod.POST)
 	public Result indexBindEmail(@RequestBody  User user) {
 		return userService.indexBindEmail(user);
@@ -139,7 +138,7 @@ public class UserController {
 	* @param   参数  
 	* @return Map<String,Object>    返回类型  
 	*/ 
-	@CrossOrigin
+
 	@RequestMapping(value = "/IndexEmailCode", method = RequestMethod.POST)
 	public Result IndexEmailCode(@RequestBody  User user) {
 		Result result = new Result();
@@ -161,7 +160,7 @@ public class UserController {
 	* @param   参数  
 	* @return PageInfo<User>    返回类型  
 	*/ 
-	@CrossOrigin
+
 	@RequestMapping(value = "/selectUser", method = RequestMethod.POST)
 	public  Result selectUser(@RequestBody PageVo pageVo) {
 			Result result = new Result();
@@ -179,7 +178,7 @@ public class UserController {
 	* @param   参数  
 	* @return Map<String,Object>    返回类型  
 	*/ 
-	@CrossOrigin
+
 	@RequestMapping(value = "/deleteUser", method = RequestMethod.POST)
 	public Result deleteUser(@RequestBody  User user) {
 		Result result = new Result();
@@ -201,7 +200,7 @@ public class UserController {
 	* @param   参数  
 	* @return Map<String,Object>    返回类型  
 	*/ 
-	@CrossOrigin
+
 	@RequestMapping(value = "/updateUser", method = RequestMethod.POST)
 	public Result updateUser(@RequestBody  User user) {	
 		Result result = new Result();
@@ -220,7 +219,7 @@ public class UserController {
 	* @return Result    返回类型  
 	* @throws  
 	*/ 
-	@CrossOrigin
+
 	@RequestMapping(value = "/updateUser1", method = RequestMethod.POST)
 	public Result updateUser1(@RequestBody  User user) {
 			Result result = new Result();
