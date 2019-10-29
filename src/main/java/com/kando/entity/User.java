@@ -33,7 +33,7 @@ public class User implements Serializable {
 
     private Integer status;//账号状态
 
-    private String role;//权限
+    private List<Role> roles;//权限
 
     private String seccode;//验证码
 
