@@ -9,6 +9,7 @@ import com.kando.service.AuthorityService;
 import com.kando.vo.PageVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -48,6 +49,7 @@ public class AuthorityServiceImpl implements AuthorityService {
     }
 
     @Override
+    @Transactional
     public boolean insertAuth(Authority authority) {
         return dao.insertAuth(authority);
     }
@@ -60,5 +62,10 @@ public class AuthorityServiceImpl implements AuthorityService {
     @Override
     public boolean updateAuth(Authority authority) {
         return dao.updateAuth(authority);
+    }
+
+    @Override
+    public List<Authority> all() {
+        return dao.selectAll();
     }
 }

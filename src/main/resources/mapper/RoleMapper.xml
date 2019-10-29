@@ -27,7 +27,7 @@
     </select>
 
 
-    <insert id="inserRole" parameterType="com.kando.entity.Role">
+    <insert id="inserRole" keyProperty="id" useGeneratedKeys="true" parameterType="com.kando.entity.Role">
         INSERT INTO sys_role(name,description,create_time,create_user_id,status) values(#{name},#{description},current_timestamp(),#{createUserId},#{status})
     </insert>
     <delete id="deleteRole" parameterType="java.lang.Integer">

@@ -4,13 +4,11 @@ import com.kando.dto.QueryResult;
 import com.kando.entity.Authority;
 import com.kando.entity.Result;
 import com.kando.service.impl.AuthorityServiceImpl;
+import com.kando.util.ResultUtil;
 import com.kando.vo.PageVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -108,6 +106,24 @@ public class AuthorityController {
             result.setCode(1);
             result.setSuccess(false);
             result.setMessage("failed");
+        }
+        return result;
+    }
+
+    @GetMapping("/all")
+    public Result all(){
+        log.info("正在执行 /all方法");
+        List<Authority> all = service.all();
+        Result<List<Authority>> result = new Result();
+        if(all!=null){
+             result.setSuccess(true);
+             result.setMessage("成功");
+             result.setCode(0);
+             result.setData(all);
+        }else {
+            result.setSuccess(false);
+            result.setMessage("失败");
+            result.setCode(1);
         }
         return result;
     }

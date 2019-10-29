@@ -31,4 +31,30 @@ public class RoleAuthController {
         }
         return result;
     }
+
+    @RequestMapping("/delete")
+    public Result delete(Integer roleId,Integer authId){
+        log.info("执行 delete....，传入roleId，authID分别为#{}，#{}",roleId,authId);
+        Result<Object> result ;
+        if(service.deleteRoleAuth(roleId,authId)){
+            log.info("删除权限成功");
+            result = ResultUtil.success("插入成功");
+        }else {
+            result = ResultUtil.fail("删除失败");
+        }
+        return result;
+    }
+
+    @RequestMapping("/update")
+    public Result update(Integer roleId,Integer authId,Integer newAuthId){
+        log.info("执行 delete....，传入roleId，authID分别为#{}，#{}",roleId,authId);
+        Result<Object> result ;
+        if(service.updateRoleAuth(roleId,authId,newAuthId)){
+            log.info("删除权限成功");
+            result = ResultUtil.success("插入成功");
+        }else {
+            result = ResultUtil.fail("删除失败");
+        }
+        return result;
+    }
 }

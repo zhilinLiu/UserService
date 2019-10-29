@@ -19,6 +19,6 @@ public class RoleAo implements Serializable {
 
     private String createUserId;
 
-    private List<Authority> authority;
+    private List<Integer> authId;
 
 }

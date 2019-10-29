@@ -16,4 +16,6 @@ public interface AuthorityService {
     boolean deleteAuth(Integer id);
 
     boolean updateAuth(Authority authority);
+
+    List<Authority> all();
 }

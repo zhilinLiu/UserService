@@ -35,10 +35,10 @@ public class RoleController {
      * 添加角色
      */
     @RequestMapping(value = "/addRole",method = RequestMethod.POST)
-    public Result inserRole(@RequestBody Role role){
-        log.info("调用增加角色，传入的参数为:"+role);
+    public Result inserRole(@RequestBody RoleAo role1){
+        log.info("调用增加角色，传入的参数为:"+role1);
         Result<Object> result = new Result<>();
-        if (service.inserRole(role)){
+        if (service.inserRole(role1)){
             result.setCode(0);
             result.setSuccess(true);
             result.setMessage("新增角色成功");
@@ -70,11 +70,9 @@ public class RoleController {
     //更新角色，需要传入id,name,description,status
     @RequestMapping(value = "/updateRole",method = RequestMethod.POST)
     public Result updateRole(@RequestBody RoleAo role1){
-        Role role = new Role();
-        BeanUtils.copyProperties(role1,role);
-        log.info("执行更新角色的方法，接受到的参数为"+role);
+        log.info("执行更新角色的方法，接受到的参数为"+role1);
         Result<Object> result = new Result<>();
-        if(service.updateRole(role)){
+        if(service.updateRole(role1)){
             log.info("更新角色成功");
             result.setCode(0);
             result.setSuccess(true);
@@ -115,7 +113,7 @@ public class RoleController {
 
     @RequestMapping("/queryAll")
     public Result selectAll(PageVo vo){
-        log.info("正在执行根据id查询角色信息,接受到的参数为："+vo);
+        log.info("正在执行  queryAll,接受到的参数为："+vo);
         Result<QueryResult> result = new Result<>();
         QueryResult queryResult = service.queryAllRoles(vo);
         if(queryResult!=null){

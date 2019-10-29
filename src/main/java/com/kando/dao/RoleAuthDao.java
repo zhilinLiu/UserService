@@ -13,4 +13,10 @@ public interface RoleAuthDao {
     List<RoleAuth> selectAuth(Integer roleId);
     //增加角色权限
     boolean insertRoleAuth(@Param("roleId") Integer roleId,@Param("authId") Integer authId);
+
+    boolean deleteRoleAuth(@Param("roleId") Integer roleId,@Param("authId") Integer authId);
+    //删除该角色下的所有权限
+    boolean deleteAllAuth(@Param("roleId") Integer roleId);
+
+    boolean updateRoleAuth(@Param("roleId") Integer roleId,@Param("authId") Integer authId,@Param("newAuthId")Integer newId);
 }

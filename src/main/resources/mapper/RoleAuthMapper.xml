@@ -15,4 +15,14 @@
     <insert id="insertRoleAuth" >
         insert into sys_role_authority(role_id,auth_id) values(#{roleId},#{authId})
     </insert>
+    <delete id="deleteRoleAuth">
+        delete from sys_role_authority where role_id=#{roleId} and auth_id=#{authId}
+    </delete>
+    <delete id="deleteAllAuth">
+        delete from sys_role_authority where role_id=#{roleId}
+    </delete>
+    <update id="updateRoleAuth">
+        update sys_role_authority set auth_id=#{newAuthId} where role_id=#{roleId} and auth_id=#{authId}
+    </update>
+
 </mapper>
