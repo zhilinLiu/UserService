@@ -1,6 +1,7 @@
 package com.kando;
 
 import com.kando.common.IdWorker;
+import com.kando.entity.User;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,6 +18,7 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 public class App {
     public static void main(String[] args) {
         SpringApplication.run(App.class,args);
+        User user = new User();
     }
     @Bean
     public IdWorker idWorker(){

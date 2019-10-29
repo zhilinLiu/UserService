@@ -8,11 +8,13 @@ import java.util.concurrent.TimeUnit;
 
 import com.kando.service.UserService;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
+import org.hibernate.validator.internal.util.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -28,17 +30,21 @@ import com.kando.entity.User;
 import com.kando.util.Random;
 import com.kando.util.TestDate;
 import com.kando.vo.PageVo;
-/**  
+
+import javax.annotation.Resource;
+
+/**
 * @ClassName: UserServiceImpl  
 * @Description: TODO业务层
 * @author 孙雨佳  
 * @date 2019年10月18日  
 *    
-*/ 
+*/
+@Slf4j
 @Service("userService")
 public class UserServiceImpl implements UserService {
 
-	@Autowired
+	@Resource
 	private UserDao userDao;
 
 
@@ -49,21 +55,17 @@ public class UserServiceImpl implements UserService {
 	/** 
 	 * @Title: loginByPwd 
 	 * @Description:登陆操作-手机号密码登陆
-	 * @param User
 	 * @return Result
 	 */
 	@Override
-	public Boolean loginByPwd(User user) {
-			Boolean bool = true;
+	public ResultEnum loginByPwd(User user) {
 			String password = user.getPassword();
 			String phone = user.getPhone();
 			User user1 = userDao.login(phone, password);
-			if (ObjectUtils.isNotEmpty(user1)) {
-					bool = true;
-			} else {
+			if (!ObjectUtils.isNotEmpty(user1)) {
 				throw new MeioException(ResultEnum.USER_NOT_EXIST);
 			}
-			return bool;
+			return ResultEnum.SUCCESS;
 
 
 	}
@@ -71,7 +73,6 @@ public class UserServiceImpl implements UserService {
 	/** 
 	 * @Title: loginByCode 
 	 * @Description: 登陆操作-手机短信登陆-发送验证码
-	 * @param User
 	 * @return Result
 	 */
 	@Override
@@ -93,7 +94,6 @@ public class UserServiceImpl implements UserService {
 	/** 
 	 * @Title: loginCheckCode 
 	 * @Description: 登陆操作-手机短信登陆-验证验证码
-	 * @param User
 	 * @return Result
 	 */
 	@Override
@@ -119,7 +119,6 @@ public class UserServiceImpl implements UserService {
 	/** 
 	 * @Title: indexByCode 
 	 * @Description: 注册操作-发送手机验证码
-	 * @param User
 	 * @return Result
 	 */
 	@Override
@@ -131,9 +130,10 @@ public class UserServiceImpl implements UserService {
 			System.out.println("注册");
 				if (ObjectUtils.isEmpty(userDao.selectByphone(phone))) {
 					bool = true;
-					System.out.println(seccode);
+					log.info("成功");
 				} else {
-					throw new MeioException(ResultEnum.PHONE_IS_EXIST); 
+					log.error("失败");
+					throw new MeioException(ResultEnum.PHONE_IS_EXIST);
 				}
 			return bool;
 
@@ -142,7 +142,6 @@ public class UserServiceImpl implements UserService {
 	/** 
 	 * @Title: indexCheckCode 
 	 * @Description: 注册操作-验证手机验证码
-	 * @param User
 	 * @return Result
 	 */
 	@Override
@@ -187,7 +186,6 @@ public class UserServiceImpl implements UserService {
 	/** 
 	 * @Title: indexBindEmail 
 	 * @Description: 注册操作-绑定邮箱-发送邮箱验证码
-	 * @param User
 	 * @return Result
 	 */
 	@Override
@@ -219,7 +217,6 @@ public class UserServiceImpl implements UserService {
 	/** 
 	 * @Title: IndexEmailCode 
 	 * @Description: 注册操作-验证邮箱验证码
-	 * @param User
 	 * @return Result
 	 */
 	@Override
@@ -248,7 +245,6 @@ public class UserServiceImpl implements UserService {
 	/** 
 	 * @Title: deleteUser
 	 * @Description: 用戶管理-刪除用戶
-	 * @param User
 	 * @return Result
 	 */
 	@Override
@@ -264,7 +260,6 @@ public class UserServiceImpl implements UserService {
 	/** 
 	 * @Title: selectUser
 	 * @Description: 用戶管理-查找用户-分页查询
-	 * @param User
 	 * @return PageInfo<User>
 	 */
 	@Override
@@ -282,7 +277,6 @@ public class UserServiceImpl implements UserService {
 	/** 
 	 * @Title: updateUser1
 	 * @Description: 用戶管理-修改用户
-	 * @param User
 	 * @return Result
 	 */
 	@Override
@@ -295,7 +289,6 @@ public class UserServiceImpl implements UserService {
 	/** 
 	 * @Title: updateUser
 	 * @Description: 用戶管理-修改用户
-	 * @param User
 	 * @return Result
 	 */
 	@Override

@@ -4,6 +4,7 @@ package com.kando.service;
 import java.util.Map;
 
 import com.github.pagehelper.PageInfo;
+import com.kando.common.exception.ResultEnum;
 import com.kando.dto.Result;
 import com.kando.entity.User;
 import com.kando.vo.PageVo;
@@ -20,8 +21,8 @@ import com.kando.vo.PageVo;
 *    
 */ 
 public interface UserService {
-	
-		 Boolean loginByPwd(User user);
+
+		ResultEnum loginByPwd(User user);
 	   
 	     Boolean loginByCode(User user);
 	    

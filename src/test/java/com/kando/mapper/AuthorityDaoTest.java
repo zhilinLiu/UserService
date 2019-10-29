@@ -12,8 +12,6 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class AuthorityDaoTest {
-    @Autowired
-    AuthorityDao authorityDao;
     @Test
     public void  test(){
 

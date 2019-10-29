@@ -16,23 +16,27 @@ import javax.validation.constraints.NotBlank;
  */
 @Data
 public class User implements Serializable {
-    private Integer id;
 
-    private String userName;
-    //sadsads
-    private String password;
+    private Integer id;//主键id
 
-    private Integer sex;
-    private String email;
+    private String userName;//用户名
 
-    private String phone;
+    private String password;//密码
 
-    private Date createTime;
+    private Integer sex;//性别
 
-    private Integer status;
+    private String email;//邮箱
 
-    private String role;
+    private String phone;//手机号
 
-    private String seccode;
+    private Date createTime;//创建时间
+
+    private Integer status;//账号状态
+
+    private String role;//权限
+
+    private String seccode;//验证码
+
+
 
 }

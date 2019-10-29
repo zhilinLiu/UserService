@@ -1,5 +1,6 @@
 package com.kando.mapper;
 
+import com.kando.dao.RoleDao;
 import com.kando.entity.Organization;
 import com.kando.entity.Role;
 import com.kando.service.impl.RoleServiceImpl;

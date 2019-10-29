@@ -4,6 +4,8 @@ import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
+import com.kando.common.exception.ResultEnum;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Param;
@@ -27,7 +29,8 @@ import com.kando.vo.PageVo;
 * @author 孙雨佳  
 * @date 2019年10月18日  
 *    
-*/ 
+*/
+@Slf4j
 @RestController
 public class UserController {
 	@Autowired
@@ -36,15 +39,13 @@ public class UserController {
 	/**  
 	* @Title: loginByPwd  
 	* @Description: TODO(登陆操作-用户名密码)  
-	* @param  map  参数  
-	* @return Map<String,Object>    返回类型  
+	* @return Result   返回类型
 	*/
 	@RequestMapping(value = "/loginByPwd", method = RequestMethod.POST)
 	public Result loginByPwd(@RequestBody User user) {
-		userService.loginByPwd(user);
 		Result result = new Result();
-		result.setCode(0);
-		result.setMessage("登陆成功");
+		result.setCode(userService.loginByPwd(user).getCode());
+		result.setMessage(userService.loginByPwd(user).getMessage());
 		result.setSuccess(true);
 		return result;
 	}
@@ -52,8 +53,7 @@ public class UserController {
 	/**  
 	* @Title: loginByCode  
 	* @Description: TODO(登陆操作-发送手机验证码)  
-	* @param  map 参数  
-	* @return Map<String,Object>    返回类型  
+	* @return Result    返回类型
 	*/ 
 
 	@RequestMapping(value = "/loginByCode", method = RequestMethod.POST)
@@ -68,8 +68,7 @@ public class UserController {
 	/**  
 	* @Title: loginCheckCode  
 	* @Description: TODO(登陆操作-验证验证码)  
-	* @param   map 参数  
-	* @return Map<String,Object>    返回类型  
+	* @return Result    返回类型
 	*/ 
 
 	@RequestMapping(value = "/loginCheckCode", method = RequestMethod.POST)
@@ -84,15 +83,13 @@ public class UserController {
 	/**  
 	* @Title: indexByCode  
 	* @Description: TODO(注册操作-发送手机验证码)  
-	* @param   参数  
-	* @return Map<String,Object>    返回类型  
+	* @return Result    返回类型
 	* @throws  
 	*/ 
 
 	@RequestMapping(value = "/indexByCode", method = RequestMethod.GET)
 	public Result indexByCode(String phone) {
 		Result result = new Result();
-		System.out.println(phone);
 		User user = new User();
 		user.setPhone(phone);
 		userService.indexByCode(user);
@@ -105,8 +102,7 @@ public class UserController {
 	/**  
 	* @Title: indexCheckCode  
 	* @Description: TODO(注册操作-验证手机验证码)  
-	* @param   参数  
-	* @return Map<String,Object>    返回类型  
+	* @return Result   返回类型
 	* @throws  
 	*/ 
 
@@ -122,8 +118,7 @@ public class UserController {
 	/**  
 	* @Title: indexBindEmail  
 	* @Description: TODO(注册操作-绑定邮箱-发送邮箱验证码)  
-	* @param   参数  
-	* @return Map<String,Object>    返回类型  
+	* @return Result    返回类型
 	* @throws  
 	*/ 
 
@@ -135,8 +130,7 @@ public class UserController {
 	/**  
 	* @Title: IndexEmailCode  
 	* @Description: TODO(注册操作-绑定邮箱-验证邮箱验证码)  
-	* @param   参数  
-	* @return Map<String,Object>    返回类型  
+	* @return Result    返回类型
 	*/ 
 
 	@RequestMapping(value = "/IndexEmailCode", method = RequestMethod.POST)
@@ -157,8 +151,7 @@ public class UserController {
 	/**  
 	* @Title: selectUser  
 	* @Description: TODO(查询用户)  
-	* @param   参数  
-	* @return PageInfo<User>    返回类型  
+	* @return PageInfo<User>    返回类型
 	*/ 
 
 	@RequestMapping(value = "/selectUser", method = RequestMethod.POST)
@@ -175,8 +168,7 @@ public class UserController {
 	/**  
 	* @Title: deleteUser  
 	* @Description: TODO(删除用户)  
-	* @param   参数  
-	* @return Map<String,Object>    返回类型  
+	* @return Result    返回类型
 	*/ 
 
 	@RequestMapping(value = "/deleteUser", method = RequestMethod.POST)
@@ -196,9 +188,8 @@ public class UserController {
 	
 	/**  
 	* @Title: updateUser  
-	* @Description: TODO(修改用户)  
-	* @param   参数  
-	* @return Map<String,Object>    返回类型  
+	* @Description: TODO(修改用户-点击修改)
+	* @return Result    返回类型
 	*/ 
 
 	@RequestMapping(value = "/updateUser", method = RequestMethod.POST)
@@ -214,9 +205,8 @@ public class UserController {
 	
 	/**  
 	* @Title: updateUser1  
-	* @Description: TODO()  
-	* @param   参数  
-	* @return Result    返回类型  
+	* @Description: TODO(修改用户-修改成功)
+	* @return Result    返回类型
 	* @throws  
 	*/ 
 

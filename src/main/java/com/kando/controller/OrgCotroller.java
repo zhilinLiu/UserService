@@ -93,7 +93,7 @@ public class OrgCotroller {
 	@RequestMapping(value = "/updateOrg1", method = RequestMethod.POST)
 	public  Result updateOrg1(@RequestBody Organization organization) {
     	Result result = new Result();
-    	orgService.update(organization);
+    	orgService.update1(organization);
 		result.setCode(0);
 		result.setSuccess(true);
 		result.setMessage("修改成功");
@@ -114,7 +114,7 @@ public class OrgCotroller {
 		orgService.insertOrg(organization);
 		result.setCode(0);
 		result.setSuccess(true);
-		result.setMessage("修改成功");
+		result.setMessage("新增成功");
 		return result;
 	}
     

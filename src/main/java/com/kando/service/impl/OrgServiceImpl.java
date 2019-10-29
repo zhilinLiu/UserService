@@ -13,11 +13,12 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 @Service
 public class OrgServiceImpl implements OrgService {
-    @Autowired(required = true)
+    @Resource
     private OrgDao orgDao;
     
         
@@ -36,9 +37,7 @@ public class OrgServiceImpl implements OrgService {
 	/** 
 	 * @Title: delete
 	 * @Description: 单位管理-刪除单位
-	 * @param map
 	 * @return map
-	 * @see UserService#delete(Map)
 	 */
 	@Override
 	public Boolean delete(Organization organization) {
@@ -53,24 +52,20 @@ public class OrgServiceImpl implements OrgService {
 	}
 	/** 
 	 * @Title: update
-	 * @Description: 单位管理-修改单位
-	 * @param map
+	 * @Description: 单位管理-修改单位-点击修改
 	 * @return map
-	 * @see UserService#selete(Map)
 	 */
 	@Override
 	public Organization update (Organization organization) {
 			Integer id = organization.getId();
 			Organization organization1 = orgDao.selectByid(id);
-			return organization;
+			return organization1;
 	}
 	
 	/** 
 	 * @Title: update
-	 * @Description:单位管理-修改单位
-	 * @param map
+	 * @Description:单位管理-修改单位-确认修改
 	 * @return map
-	 * @see UserService#selete(Map)
 	 */
 	@Override
 	public Boolean update1 (Organization organization) {
@@ -86,9 +81,8 @@ public class OrgServiceImpl implements OrgService {
 	/** 
 	 * @Title: insert
 	 * @Description:单位管理-新增单位
-	 * @param map
 	 * @return map
-	 * @see UserService#insert(Map)
+
 	 */
 	@Override
 	public Boolean insertOrg (Organization organization) {

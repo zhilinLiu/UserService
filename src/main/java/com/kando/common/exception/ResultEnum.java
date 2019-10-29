@@ -12,13 +12,11 @@ import lombok.Getter;
    EMAIL_NULL_ERROR(13,"邮箱或验证码不能为空"),
    Code_long_ERROR(14,"验证码已超时"),
    PHONE_STOCK_ERROR(15, "手机或验证码不正确"),
-   PHONE_IS_EXIST(16,"用户已存在")
-    ;
+   PHONE_IS_EXIST(16,"用户已存在");
     private Integer code;
     private String message;
     ResultEnum(Integer code, String message) {
         this.code = code;
         this.message = message;
     }
-
 }
