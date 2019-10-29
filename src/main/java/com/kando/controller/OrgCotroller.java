@@ -33,12 +33,20 @@ public class OrgCotroller {
 
 	@RequestMapping(value = "/selectOrg", method = RequestMethod.GET)
 	public  Result selectOrg(PageVo pageVo) {
-		Result result = new Result();
-		result.setCode(0);
-		result.setData(orgService.selectOrg(pageVo));
-        result.setMessage("查询成功");
-		result.setSuccess(true);
-		return result;
+	    try{
+            Result result = new Result();
+            result.setCode(0);
+            result.setData(orgService.selectOrg(pageVo));
+            result.setMessage("查询成功");
+            result.setSuccess(true);
+            return result;
+        }catch (Exception e){
+            Result result = new Result();
+            result.setMessage(e.getMessage());
+            result.setCode(1);
+            result.setSuccess(false);
+            return result;
+        }
 	}
 
 
@@ -50,12 +58,20 @@ public class OrgCotroller {
 
 	@RequestMapping(value = "/deleteOrg", method = RequestMethod.POST)
 	public  Result deleteOrg(@RequestBody Organization organization) {
-		Result result = new Result();
-		ResultEnum resultEnum = orgService.deleteOrg(organization);
-		result.setCode(resultEnum.getCode());
-		result.setMessage(resultEnum.getMessage());
-		result.setSuccess(true);
-		return result;
+        try{
+            Result result = new Result();
+            ResultEnum resultEnum = orgService.deleteOrg(organization);
+            result.setCode(resultEnum.getCode());
+            result.setMessage(resultEnum.getMessage());
+            result.setSuccess(true);
+            return result;
+        }catch (Exception e){
+            Result result = new Result();
+            result.setMessage(e.getMessage());
+            result.setCode(1);
+            result.setSuccess(false);
+            return result;
+        }
 	}
 
 	/**
@@ -66,12 +82,20 @@ public class OrgCotroller {
 
 	@RequestMapping(value = "/updateOrg", method = RequestMethod.GET)
 	public  Result updateOrg(Organization organization) {
-		Result result = new Result();
-		result.setCode(0);
-		result.setData(orgService.updateOrg(organization));
-		result.setMessage("点击修改");
-		result.setSuccess(true);
-		return result;
+        try{
+            Result result = new Result();
+            result.setCode(0);
+            result.setData(orgService.updateOrg(organization));
+            result.setMessage("点击修改");
+            result.setSuccess(true);
+            return result;
+        }catch (Exception e){
+            Result result = new Result();
+            result.setMessage(e.getMessage());
+            result.setCode(1);
+            result.setSuccess(false);
+            return result;
+        }
 	}
 
 	/**
@@ -82,12 +106,20 @@ public class OrgCotroller {
 
 	@RequestMapping(value = "/updateOrg1", method = RequestMethod.POST)
 	public  Result updateOrg1(@RequestBody Organization organization) {
-		Result result = new Result();
-		ResultEnum resultEnum = orgService.updateOrg1(organization);
-		result.setCode(resultEnum.getCode());
-		result.setSuccess(true);
-		result.setMessage(resultEnum.getMessage());
-		return result;
+        try{
+            Result result = new Result();
+            ResultEnum resultEnum = orgService.updateOrg1(organization);
+            result.setCode(resultEnum.getCode());
+            result.setSuccess(true);
+            result.setMessage(resultEnum.getMessage());
+            return result;
+        }catch (Exception e){
+            Result result = new Result();
+            result.setMessage(e.getMessage());
+            result.setCode(1);
+            result.setSuccess(false);
+            return result;
+        }
 	}
 
 	/**
@@ -98,12 +130,19 @@ public class OrgCotroller {
 
 	@RequestMapping(value = "/insertOrg", method = RequestMethod.POST)
 	public  Result insertOrg(@RequestBody Organization organization) {
-		Result result = new Result();
-		ResultEnum resultEnum = orgService.insertOrg(organization);
-		result.setCode(resultEnum.getCode());
-		result.setSuccess(true);
-		result.setMessage(resultEnum.getMessage());
-		return result;
+        try{
+            Result result = new Result();
+            ResultEnum resultEnum = orgService.insertOrg(organization);
+            result.setCode(resultEnum.getCode());
+            result.setSuccess(true);
+            result.setMessage(resultEnum.getMessage());
+            return result;
+        }catch (Exception e){
+            Result result = new Result();
+            result.setMessage(e.getMessage());
+            result.setCode(1);
+            result.setSuccess(false);
+            return result;
+        }
 	}
-
 }

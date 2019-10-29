@@ -22,7 +22,7 @@ import com.kando.vo.PageVo;
 */
 public interface UserService {
 
-		ResultEnum loginByPwd(User user);
+		 ResultEnum loginByPwd(User user);
 
 	     Boolean loginByCode(User user);
 
