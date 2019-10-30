@@ -25,9 +25,9 @@ public class OrgServiceImpl implements OrgService {
     private OrgDao orgDao;
 
     /**
+     * @return PageInfo
      * @Title: selectOrg
      * @Description: 单位管理-模糊查询-查询单位
-     * @return PageInfo
      */
     @Override
     public PageInfo<Organization> selectOrg(PageVo pageVo) {
@@ -35,7 +35,8 @@ public class OrgServiceImpl implements OrgService {
         System.out.println(Key);
         Integer pageNum = pageVo.getPage();
         Integer pageSize = pageVo.getLimit();
-        if (ObjectUtils.isEmpty(pageNum) || ObjectUtils.isEmpty(pageSize)){
+        if (ObjectUtils.isEmpty(pageNum) || ObjectUtils.isEmpty(pageSize)) {
+            //页码，条数不能为空，报参数异常
             throw new MeioException(ResultEnum.PARAM_ERROR);
         }
         PageHelper.startPage(pageNum, pageSize);
@@ -46,46 +47,50 @@ public class OrgServiceImpl implements OrgService {
     }
 
     /**
+     * @return ResultEnum
      * @Title: delete
      * @Description: 单位管理-刪除单位
-     * @return ResultEnum
      */
     @Override
     public ResultEnum deleteOrg(Organization organization) {
         Integer id = organization.getId();
-        if (ObjectUtils.isEmpty(id)) {/*单位ID不存在*/
+        if (ObjectUtils.isEmpty(id)) {
+            /*单位ID不存在*/
             throw new MeioException(ResultEnum.UNIT_ID_IS_NOT_EXIST_ERROR);
         }
-        if (ObjectUtils.isEmpty(orgDao.selectByid(id))) {/*单位不存在*/
+        if (ObjectUtils.isEmpty(orgDao.selectByid(id))) {
+            /*单位不存在*/
             throw new MeioException(ResultEnum.UNIT_IS_NOT_EXIST_ERROR);
         }
         Integer a = orgDao.deleteByid(id);
-        if (a <= 0) throw new MeioException(ResultEnum.PARAM_ERROR);
+        if (a <= 0) throw new MeioException(ResultEnum.DELETE_UNIT_ERROR);
         return ResultEnum.SUCCESS;
     }
 
     /**
+     * @return Organization
      * @Title: update
      * @Description: 单位管理-修改单位-点击修改
-     * @return Organization
      */
     @Override
     public Organization updateOrg(Organization organization) {
         Integer id = organization.getId();
-        if (ObjectUtils.isEmpty(id)) {/*单位ID不存在*/
+        if (ObjectUtils.isEmpty(id)) {
+            /*单位ID不存在*/
             throw new MeioException(ResultEnum.UNIT_ID_IS_NOT_EXIST_ERROR);
         }
         Organization organization1 = orgDao.selectByid(id);
-        if (ObjectUtils.isEmpty(organization1)) {/*单位不存在*/
+        if (ObjectUtils.isEmpty(organization1)) {
+            /*单位不存在*/
             throw new MeioException(ResultEnum.UNIT_IS_NOT_EXIST_ERROR);
         }
         return organization1;
     }
 
     /**
+     * @return ResultEnum
      * @Title: update
      * @Description:单位管理-修改单位-确认修改
-     * @return ResultEnum
      */
     @Override
     public ResultEnum updateOrg1(Organization organization) {
@@ -94,14 +99,14 @@ public class OrgServiceImpl implements OrgService {
         organization1.setName(organization.getName());
         organization1.setOrgId(organization.getOrgId());
         organization1.setStatus(organization.getStatus());
-        if (orgDao.update(organization) <= 0) throw new MeioException(ResultEnum.PARAM_ERROR);
+        orgDao.update(organization);
         return ResultEnum.SUCCESS;
     }
 
     /**
+     * @return ResultEnum
      * @Title: insert
      * @Description:单位管理-新增单位
-     * @return ResultEnum
      */
     @Override
     public ResultEnum insertOrg(Organization organization) {
@@ -110,15 +115,17 @@ public class OrgServiceImpl implements OrgService {
         String name = organization.getName();
         String orgId = organization.getOrgId();
         Integer status = organization.getStatus();
-        if(StringUtils.isBlank(name)||StringUtils.isBlank(orgId)||ObjectUtils.isEmpty(status)){
-        throw new MeioException(ResultEnum.PARAM_ERROR);
+        if (StringUtils.isBlank(name) || StringUtils.isBlank(orgId) || ObjectUtils.isEmpty(status)) {
+            //参数不能为空，报参数异常
+            throw new MeioException(ResultEnum.PARAM_ERROR);
         }
         organization1.setCreateTime(date.getDate());
         organization1.setName(name);
         organization1.setOrgId(orgId);
         organization1.setStatus(status);
         Integer a = orgDao.insertOrg(organization);
-        if (a <= 0) throw new MeioException(ResultEnum.PARAM_ERROR);
+        //新增单位失败
+        if (a <= 0) throw new MeioException(ResultEnum.INSERT_UNIT_ERROR);
         return ResultEnum.SUCCESS;
     }
 }

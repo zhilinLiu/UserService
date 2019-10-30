@@ -38,7 +38,7 @@ import javax.annotation.Resource;
  * @author 孙雨佳
  * @ClassName: UserServiceImpl
  * @Description: TODO业务层
- * @date 2019年10月18日
+ * @date 2019年10月28日修改
  */
 @Slf4j
 @Service("userService")
@@ -64,10 +64,12 @@ public class UserServiceImpl implements UserService {
         String password = user.getPassword();
         String phone = user.getPhone();
         if (StringUtils.isBlank(password) || StringUtils.isBlank(phone)) {
+            //手机号或密码不能为空
             throw new MeioException(ResultEnum.PHONE_STOCK_ERROR);
         }
         User user1 = userDao.login(phone, password);
-        if (!ObjectUtils.isNotEmpty(user1)) {
+        if (ObjectUtils.isEmpty(user1)) {
+            //用户不存在
             throw new MeioException(ResultEnum.USER_NOT_EXIST_ERROR);
         }
         return ResultEnum.SUCCESS;
@@ -88,6 +90,7 @@ public class UserServiceImpl implements UserService {
         System.out.println("登陆");
         System.out.println(seccode);
         if (ObjectUtils.isEmpty(userDao.selectByphone(phone))) {
+            //用户不存在
             throw new MeioException(ResultEnum.USER_NOT_EXIST_ERROR);
         }
         return ResultEnum.SUCCESS;
@@ -103,12 +106,14 @@ public class UserServiceImpl implements UserService {
         String phone = user.getPhone();
         String seccode1 = redis.opsForValue().get(phone);
         String seccode = user.getSeccode();
-        System.out.println("登陆");
+        System.out.println("验证手机验证码");
         if (StringUtils.isBlank(seccode1)) {
-            throw new MeioException(ResultEnum.PHONE_STOCK_ERROR);
+            //验证码超时
+            throw new MeioException(ResultEnum.Code_long_ERROR);
         }
         if (!seccode.equals(seccode1)) {
-            throw new MeioException(ResultEnum.Code_long_ERROR);
+            //手机或验证码不正确
+            throw new MeioException(ResultEnum.PHONE_STOCK_ERROR);
         }
         return ResultEnum.SUCCESS;
 
@@ -127,6 +132,7 @@ public class UserServiceImpl implements UserService {
         System.out.println("注册");
         log.info(seccode);
         if (ObjectUtils.isNotEmpty(userDao.selectByphone(phone))) {
+            //用户已经存在
             throw new MeioException(ResultEnum.PHONE_IS_EXIST_ERROR);
         }
         return ResultEnum.SUCCESS;
@@ -145,11 +151,13 @@ public class UserServiceImpl implements UserService {
         String user_name = user.getUserName();
         String password = user.getPassword();
         Integer sex = user.getSex();
-        System.out.println("验证验证码");
+        log.info("验证手机验证码");
         if (StringUtils.isBlank(seccode1)) {
+            //验证码超时
             throw new MeioException(ResultEnum.Code_long_ERROR);
         }
         if (!seccode.equals(seccode1)) {
+            //手机或验证码不正确
             throw new MeioException(ResultEnum.PHONE_STOCK_ERROR);
         }
         User user1 = new User();
@@ -159,7 +167,10 @@ public class UserServiceImpl implements UserService {
         user1.setPassword(password);
         TestDate date = new TestDate();
         user1.setCreateTime(date.getDate());
-        userDao.index(user1);
+        Integer a = userDao.index(user1);
+        if(a<=0){
+            throw new MeioException(ResultEnum.UNKNOWN_ERROR);
+        }
 //					//添加默认角色--访客
 //					if (role.equals("1")){
 //						authorityService.addGuest(phone);
@@ -167,7 +178,7 @@ public class UserServiceImpl implements UserService {
 //						authorityService.addDesigner(phone);
 //					}else if(role.equals("3")){
 //						authorityService.addSpecialist(phone);
-//					}
+//		}
         return ResultEnum.SUCCESS;
     }
 
@@ -177,29 +188,22 @@ public class UserServiceImpl implements UserService {
      * @Description: 注册操作-绑定邮箱-发送邮箱验证码
      */
     @Override
-    public Result indexBindEmail(User user) {
+    public ResultEnum indexBindEmail(User user) {
         Result result = new Result();
         String email = user.getEmail();
-        if (StringUtils.isNotBlank(email)) {
-            if (ObjectUtils.isEmpty(userDao.selectByemail(email))) {
-                String seccode = Random.getRandom();
-                redis.opsForValue().set(email, seccode, 5, TimeUnit.MINUTES);
-                System.out.println(seccode);
-                result.setCode(0);
-                result.setMessage("验证码发送成功");
-                result.setSuccess(true);
-                result.setData(seccode);
-            } else {
-                result.setCode(1);
-                result.setMessage("邮箱已被绑定");
-                result.setSuccess(false);
-            }
-        } else {
-            result.setCode(1);
-            result.setMessage("邮箱不能为空");
-            result.setSuccess(false);
+        if (StringUtils.isBlank(email)) {
+            //邮箱不能为空
+            throw new MeioException(ResultEnum.PARAM_ERROR);
         }
-        return result;
+        if (ObjectUtils.isNotEmpty(userDao.selectByemail(email))) {
+            //邮箱已经被绑定
+            throw new  MeioException(ResultEnum.EMAIL_IS_EXIST_ERROR);
+        }
+            String seccode = Random.getRandom();
+            redis.opsForValue().set(email, seccode, 5, TimeUnit.MINUTES);
+            log.info(seccode);
+            log.info("发送邮箱验证码");
+            return ResultEnum.SUCCESS;
     }
 
     /**
@@ -213,20 +217,25 @@ public class UserServiceImpl implements UserService {
         String email = user.getEmail();
         String seccode1 = redis.opsForValue().get(email);
         String seccode = user.getSeccode();
-        System.out.println(email);
         if (StringUtils.isBlank(phone) || StringUtils.isBlank(email)) {
+            //手机或邮箱不能为空
             throw new MeioException(ResultEnum.PARAM_ERROR);
         }
         if (StringUtils.isBlank(seccode1)) {
-            throw new MeioException(ResultEnum.EMAIL_NULL_ERROR);
+            //验证码超时
+            throw new MeioException(ResultEnum.Code_long_ERROR);
         }
         if (!seccode.equals(seccode1)) {
+            //邮箱或验证码不正确
             throw new MeioException(ResultEnum.EMAIL_STOCK_ERROR);
         }
         User user1 = new User();
         user1.setPhone(phone);
         user1.setEmail(email);
-        userDao.updateEmail(user1);
+        Integer a = userDao.updateEmail(user1);
+        if(a<=0){
+            throw new MeioException(ResultEnum.EMAIL_ERROR);
+        }
         return ResultEnum.SUCCESS;
     }
 
@@ -239,9 +248,14 @@ public class UserServiceImpl implements UserService {
     public ResultEnum deleteUser(User user) {
         Integer id = user.getId();
         if (ObjectUtils.isEmpty(id)) {
+            //id不能为空
             throw new MeioException(ResultEnum.PARAM_ERROR);
         }
-        userDao.deleteByid(id);
+        Integer a = userDao.deleteByid(id);
+        if(a<=0){
+            //删除用户失败
+            throw new MeioException(ResultEnum.DELETE_USER_ERROR);
+        }
         return ResultEnum.SUCCESS;
     }
 
@@ -256,7 +270,7 @@ public class UserServiceImpl implements UserService {
         Integer pageSize = pageVo.getLimit();
         PageHelper.startPage(pageNum, pageSize);
         String Key = pageVo.getKey();
-        System.out.println(Key);
+        log.info(Key);
         List<User> user1 = userDao.selectAll(Key);
         PageInfo<User> pageInfo = new PageInfo<User>(user1);
         return pageInfo;
@@ -268,9 +282,16 @@ public class UserServiceImpl implements UserService {
      * @Description: 用戶管理-修改用户
      */
     @Override
-    public User updateUser(User user) {
-        Integer id = user.getId();
+    public User updateUser(Integer id) {
+        if(ObjectUtils.isEmpty(id)){
+            //id不能为空
+            throw new MeioException(ResultEnum.PARAM_ERROR);
+        }
         User user1 = userDao.selectByid(id);
+        if (ObjectUtils.isEmpty(user1)){
+            //用户不存在
+            throw new MeioException(ResultEnum.USER_NOT_EXIST_ERROR);
+        }
         return user1;
     }
 
