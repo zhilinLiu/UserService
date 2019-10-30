@@ -274,8 +274,8 @@ public class UserServiceImpl implements UserService {
         log.info(Key);
         List<User> user1 = userDao.selectAll(Key);
         user1.forEach(user->{
-            List<Role> roles = userRoleService.selectRoleId(user.getId());
-            if(ObjectUtils.isEmpty(roles)){
+            List<Role> roles=userRoleService.selectRoleId(user.getId());
+            if(roles==null || roles.size()==0){
                 throw new MeioException(ResultEnum.PARAM_ERROR);
             }
             user.setRoles(roles);

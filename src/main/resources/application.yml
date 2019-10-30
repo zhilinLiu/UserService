@@ -1,4 +1,6 @@
 spring:
+  cache:
+    type: redis
   main:
     allow-bean-definition-overriding: true
   application:
