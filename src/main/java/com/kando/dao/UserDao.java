@@ -6,23 +6,23 @@ import com.kando.entity.User;
 import org.apache.ibatis.annotations.Param;
 
 public interface  UserDao {
-	public User selectByphone(@Param("phone") String phone);
+	 User selectByphone(@Param("phone") String phone);
 	
-	public User login(@Param("phone") String phone, @Param("password") String password);
+	 User login(@Param("phone") String phone, @Param("password") String password);
 	
-	public Integer index(User user);
+	 Integer index(User user);
 	
-	public User selectByemail(@Param("email") String email);
+	 User selectByemail(@Param("email") String email);
 	
-	public Integer updateEmail(User user);
+	 Integer updateEmail(User user);
 	
-	public Integer update(User user);
+	 Integer update(User user);
 	
-	public Integer deleteByid(@Param("id") Integer id);
+	 Integer deleteByid(@Param("id") Integer id);
 	
-	public User selectByid(@Param("id") Integer id);
+	 User selectByid(@Param("id") Integer id);
 
-	public List<User> selectAll(@Param("key") String key);
+	 List<User> selectAll(@Param("key") String key);
 	
 	
 }

@@ -1,6 +1,7 @@
 package com.kando.dto;
 
 public class Result<T> {
+    public Object set;
     private int code;
     private boolean isSuccess;
     private String message;

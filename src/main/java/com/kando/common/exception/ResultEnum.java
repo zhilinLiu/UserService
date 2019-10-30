@@ -7,7 +7,7 @@ public enum ResultEnum {
     SUCCESS(0, "成功"),
     PARAM_ERROR(1, "参数不正确"),
     USER_NOT_EXIST_ERROR(10, "用户不存在"),
-    USER_STOCK_ERROR(11, "用户信息不正确"),
+    USER_STOCK_ERROR(11, "手机或密码不正确"),
     EMAIL_STOCK_ERROR(12, "邮箱或验证码不正确"),
     EMAIL_NULL_ERROR(13,"邮箱或验证码不能为空"),
     Code_long_ERROR(14,"验证码已超时"),

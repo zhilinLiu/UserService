@@ -1,8 +1,10 @@
 package com.kando.controller;
 
 
+import com.kando.common.exception.MeioException;
 import com.kando.common.exception.ResultEnum;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,12 +37,20 @@ public class UserController {
      */
     @RequestMapping(value = "/loginByPwd", method = RequestMethod.GET)
     public Result loginByPwd(User user) {
-        Result result = new Result();
-        ResultEnum resultEnum = userService.loginByPwd(user);
-        result.setCode(resultEnum.getCode());
-        result.setMessage(resultEnum.getMessage());
-        result.setSuccess(true);
-        return result;
+        try{
+            Result result = new Result();
+            ResultEnum resultEnum = userService.loginByPwd(user);
+            result.setCode(resultEnum.getCode());
+            result.setMessage(resultEnum.getMessage());
+            result.setSuccess(true);
+            return result;
+        }catch (MeioException e){
+            Result result = new Result();
+            result.setCode(e.getCode());
+            result.setMessage(e.getMessage());
+            result.setSuccess(false);
+            return result;
+        }
     }
 
     /**
@@ -51,11 +61,19 @@ public class UserController {
 
     @RequestMapping(value = "/loginByCode", method = RequestMethod.GET)
     public Result loginByCode(@Validated User user) {
-        Result result = new Result();
-        result.setCode(0);
-        result.setMessage("验证码发送成功");
-        result.setSuccess(userService.loginByCode(user));
-        return result;
+        try{
+            ResultEnum resultEnum = userService.loginByCode(user);
+            Result result = new Result();
+            result.setCode(resultEnum.getCode());
+            result.setMessage(resultEnum.getMessage());
+            result.setSuccess(true);
+            return result;
+        }catch (MeioException e){
+            Result result = new Result();
+            result.setCode(e.getCode());
+            result.setMessage(e.getMessage());
+            return result;
+        }
     }
 
     /**
@@ -66,11 +84,20 @@ public class UserController {
 
     @RequestMapping(value = "/loginCheckCode", method = RequestMethod.GET)
     public Result checkCode(@Validated User user) {
-        Result result = new Result();
-        result.setCode(0);
-        result.setMessage("登陆成功");
-        result.setSuccess(userService.loginCheckCode(user));
-        return result;
+        try{
+            ResultEnum resultEnum = userService.loginCheckCode(user);
+            Result result = new Result();
+            result.setCode(resultEnum.getCode());
+            result.setMessage(resultEnum.getMessage());
+            result.setSuccess(true);
+            return result;
+        }catch (MeioException e){
+            Result result = new Result();
+            result.setCode(e.getCode());
+            result.setMessage(e.getMessage());
+            result.setSuccess(false);
+            return result;
+        }
     }
 
     /**
@@ -82,14 +109,22 @@ public class UserController {
 
     @RequestMapping(value = "/indexByCode", method = RequestMethod.GET)
     public Result indexByCode(String phone) {
-        Result result = new Result();
-        User user = new User();
-        user.setPhone(phone);
-        userService.indexByCode(user);
-        result.setCode(0);
-        result.setMessage("发送验证码成功");
-        result.setSuccess(true);
-        return result;
+        try{
+            User user = new User();
+            user.setPhone(phone);
+            ResultEnum resultEnum = userService.indexByCode(user);
+            Result result = new Result();
+            result.setCode(resultEnum.getCode());
+            result.setMessage(resultEnum.getMessage());
+            result.setSuccess(true);
+            return result;
+        }catch (MeioException e){
+            Result result = new Result();
+            result.setCode(e.getCode());
+            result.setMessage(e.getMessage());
+            result.setSuccess(false);
+            return result;
+        }
     }
 
     /**
@@ -100,11 +135,20 @@ public class UserController {
 
     @RequestMapping(value = "/indexCheckCode", method = RequestMethod.POST)
     public Result indexCheckCode(@RequestBody User user) {
-        Result result = new Result();
-        result.setCode(0);
-        result.setMessage("注册成功");
-        result.setSuccess(userService.indexCheckCode(user));
-        return result;
+        try{
+            ResultEnum resultEnum = userService.indexCheckCode(user);
+            Result result = new Result();
+            result.setCode(resultEnum.getCode());
+            result.setMessage(resultEnum.getMessage());
+            result.setSuccess(true);
+            return result;
+        }catch (MeioException e){
+            Result result = new Result();
+            result.setCode(e.getCode());
+            result.setMessage(e.getMessage());
+            result.setSuccess(false);
+            return result;
+        }
     }
 
     /**
@@ -127,17 +171,20 @@ public class UserController {
 
     @RequestMapping(value = "/IndexEmailCode", method = RequestMethod.POST)
     public Result IndexEmailCode(@RequestBody User user) {
-        Result result = new Result();
-        if (userService.IndexEmailCode(user)) {
-            result.setCode(0);
-            result.setMessage("绑定成功");
+        try{
+            ResultEnum resultEnum = userService.IndexEmailCode(user);
+            Result result = new Result();
+            result.setCode(resultEnum.getCode());
+            result.setMessage(resultEnum.getMessage());
             result.setSuccess(true);
-        } else {
-            result.setCode(1);
-            result.setMessage("绑定失败");
+            return result;
+        }catch (MeioException e){
+            Result result = new Result();
+            result.setCode(e.getCode());
+            result.setMessage(e.getMessage());
             result.setSuccess(false);
+            return result;
         }
-        return result;
     }
 
     /**
@@ -150,10 +197,16 @@ public class UserController {
     public Result selectUser(PageVo pageVo) {
         Result result = new Result();
         PageInfo<User> pageInfo = userService.selectUser(pageVo);
-        result.setCode(0);
-        result.setMessage("查询成功");
-        result.setSuccess(true);
-        result.setData(pageInfo);
+        if(ObjectUtils.isNotEmpty(pageInfo)){
+            result.setCode(0);
+            result.setMessage("查询成功");
+            result.setSuccess(true);
+            result.setData(pageInfo);
+        }else{
+            result.setCode(1);
+            result.setMessage("查询失败");
+            result.setSuccess(false);
+        }
         return result;
     }
 
@@ -165,17 +218,20 @@ public class UserController {
 
     @RequestMapping(value = "/deleteUser", method = RequestMethod.POST)
     public Result deleteUser(@RequestBody User user) {
-        Result result = new Result();
-        if (userService.deleteUser(user)) {
-            result.setCode(0);
-            result.setMessage("删除成功");
+        try{
+            ResultEnum resultEnum = userService.deleteUser(user);
+            Result result = new Result();
+            result.setCode(resultEnum.getCode());
+            result.setMessage(resultEnum.getMessage());
             result.setSuccess(true);
-        } else {
-            result.setCode(1);
-            result.setMessage("删除失败");
+            return result;
+        }catch (MeioException e){
+            Result result = new Result();
+            result.setCode(e.getCode());
+            result.setMessage(e.getMessage());
             result.setSuccess(false);
+            return result;
         }
-        return result;
     }
 
     /**
@@ -187,7 +243,7 @@ public class UserController {
     @RequestMapping(value = "/updateUser", method = RequestMethod.GET)
     public Result updateUser(User user) {
         Result result = new Result();
-        User user1 = userService.updateUser1(user);
+        User user1 = userService.updateUser(user);
         result.setCode(0);
         result.setData(user1);
         result.setMessage("确认修改");
@@ -204,10 +260,19 @@ public class UserController {
 
     @RequestMapping(value = "/updateUser1", method = RequestMethod.POST)
     public Result updateUser1(@RequestBody User user) {
-        Result result = new Result();
-        result.setCode(0);
-        result.setMessage("修改成功");
-        result.setSuccess(userService.updateUser(user));
-        return result;
+        try{
+            ResultEnum resultEnum = userService.updateUser1(user);
+            Result result = new Result();
+            result.setCode(resultEnum.getCode());
+            result.setMessage(resultEnum.getMessage());
+            result.setSuccess(true);
+            return result;
+        }catch (MeioException e){
+            Result result = new Result();
+            result.setCode(e.getCode());
+            result.setMessage(e.getMessage());
+            result.setSuccess(false);
+            return result;
+        }
     }
 }
