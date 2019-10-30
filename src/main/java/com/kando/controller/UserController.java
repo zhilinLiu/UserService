@@ -1,10 +1,11 @@
 package com.kando.controller;
 
 
-import com.kando.common.exception.MeioException;
+import com.kando.ao.UserAo;
 import com.kando.common.exception.ResultEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -200,7 +201,7 @@ public class UserController {
     }
 
     /**
-     * @return PageInfo<User>    返回类型
+     * @return Result   返回类型
      * @Title: selectUser
      * @Description: TODO(查询用户)
      */
@@ -288,8 +289,11 @@ public class UserController {
      */
 
     @RequestMapping(value = "/updateUser1", method = RequestMethod.POST)
-    public Result updateUser1(@RequestBody User user) {
+    public Result updateUser1(@RequestBody UserAo user1) {
+        User user = new User();
+        BeanUtils.copyProperties(user1,user);
         try {
+            log.info("接收到的参数为"+user);
             ResultEnum resultEnum = userService.updateUser1(user);
             Result result = new Result();
             result.setCode(resultEnum.getCode());

@@ -12,7 +12,7 @@
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
 		<result column="status" property="status" jdbcType="INTEGER" />
     </resultMap>
-   <sql id="Base_Column_List">
+    <sql id="Base_Column_List">
         id, user_name, password, sex, email, phone, create_time, status
     </sql>
      <select id="selectByphone"
@@ -128,7 +128,7 @@
         status = #{status,jdbcType=INTEGER},
       </if>
     </set>
-	where id = #{id,jdbcType=INTEGER}
+        where id = #{id,jdbcType=INTEGER}
 	</update>
 	
 	<delete id="deleteByid" parameterType="com.kando.entity.User">  

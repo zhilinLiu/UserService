@@ -1,11 +1,9 @@
 package com.kando.service;
 
 
-import java.util.Map;
 
 import com.github.pagehelper.PageInfo;
 import com.kando.common.exception.ResultEnum;
-import com.kando.dto.Result;
 import com.kando.entity.User;
 import com.kando.vo.PageVo;
 
@@ -13,8 +11,8 @@ import com.kando.vo.PageVo;
 /**
  * @author 孙雨佳
  * @ClassName: UserService
- * @Description: 业务层接口
- * @date 2019年10月23日
+ * @Description: 用户-业务层接口
+ * @date 2019年10月30日修改
  */
 public interface UserService {
     //手机密码登陆

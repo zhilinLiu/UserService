@@ -1,26 +1,19 @@
 package com.kando.service.impl;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 
 import com.kando.entity.Role;
-import com.kando.service.UserRoleService;
 import com.kando.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.subject.Subject;
-import org.hibernate.validator.internal.util.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -32,14 +25,14 @@ import com.kando.entity.User;
 import com.kando.util.Random;
 import com.kando.util.TestDate;
 import com.kando.vo.PageVo;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 
 /**
  * @author 孙雨佳
  * @ClassName: UserServiceImpl
  * @Description: TODO业务层
- * @date 2019年10月28日修改
+ * @date 2019年10月30日修改
  */
 @Slf4j
 @Service("userService")
@@ -56,7 +49,7 @@ public class UserServiceImpl implements UserService {
 
 
     /**
-     * @return Result
+     * @return ResultEnum
      * @Title: loginByPwd
      * @Description:登陆操作-手机号密码登陆
      */
@@ -79,7 +72,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * @return Result
+     * @return ResultEnum
      * @Title: loginByCode
      * @Description: 登陆操作-手机短信登陆-发送验证码
      */
@@ -98,7 +91,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * @return Result
+     * @return ResultEnum
      * @Title: loginCheckCode
      * @Description: 登陆操作-手机短信登陆-验证验证码
      */
@@ -121,7 +114,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * @return Result
+     * @return ResultEnum
      * @Title: indexByCode
      * @Description: 注册操作-发送手机验证码
      */
@@ -140,7 +133,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * @return Result
+     * @return ResultEnum
      * @Title: indexCheckCode
      * @Description: 注册操作-验证手机验证码
      */
@@ -184,7 +177,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * @return Result
+     * @return ResultEnum
      * @Title: indexBindEmail
      * @Description: 注册操作-绑定邮箱-发送邮箱验证码
      */
@@ -208,7 +201,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * @return Result
+     * @return ResultEnum
      * @Title: IndexEmailCode
      * @Description: 注册操作-验证邮箱验证码
      */
@@ -241,7 +234,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * @return Result
+     * @return ResultEnum
      * @Title: deleteUser
      * @Description: 用戶管理-刪除用戶
      */
@@ -275,7 +268,7 @@ public class UserServiceImpl implements UserService {
         List<User> user1 = userDao.selectAll(Key);
         user1.forEach(user->{
             List<Role> roles=userRoleService.selectRoleId(user.getId());
-            if(roles==null || roles.size()==0){
+            if(roles==null){
                 throw new MeioException(ResultEnum.PARAM_ERROR);
             }
             user.setRoles(roles);
@@ -285,8 +278,8 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * @return Result
-     * @Title: updateUser1
+     * @return ResultEnum
+     * @Title: updateUser
      * @Description: 用戶管理-修改用户
      */
     @Override
@@ -300,24 +293,37 @@ public class UserServiceImpl implements UserService {
             //用户不存在
             throw new MeioException(ResultEnum.USER_NOT_EXIST_ERROR);
         }
+            List<Role> roles=userRoleService.selectRoleId(id);
+        if(roles==null){
+            throw new MeioException(ResultEnum.PARAM_ERROR);
+        }
+            user1.setRoles(roles);
         return user1;
     }
 
     /**
-     * @return Result
-     * @Title: updateUser
+     * @return ResultEnum
+     * @Title: updateUser1
      * @Description: 用戶管理-修改用户
      */
     @Override
+    @Transactional
     public ResultEnum updateUser1(User user) {
         User user1 = new User();
+        Integer userId = user.getId();
         user1.setUserName(user.getUserName());
         user1.setPassword(user.getPassword());
         user1.setPhone(user.getPhone());
         user1.setSex(user.getSex());
         user1.setStatus(user.getStatus());
         user1.setEmail(user.getEmail());
-        user1.setId(user.getId());
+        user1.setId(userId);
+        user1.setRoles(user.getRoles());
+        userRoleService.deleteRoleId(userId);
+        ArrayList<Integer> roleIdList = user.getRoleId();
+        roleIdList.forEach(roleId->{
+            userRoleService.insertRoleId(userId,roleId);
+        });
         userDao.update(user1);
         return ResultEnum.SUCCESS;
     }

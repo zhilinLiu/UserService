@@ -3,7 +3,18 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kando.dao.UserRoleDao">
+<!--        <resultMap id="UserRoleResultMap" type="com.kando.entity.UserRole">-->
+<!--            <id column="id" property="id" jdbcType="INTEGER" />-->
+<!--            <result column="user_id" property="userId" jdbcType="INTEGER" />-->
+<!--            <result column="role_id" property="roleId" jdbcType="INTEGER" />-->
+<!--        </resultMap>-->
    <select id="selectRoleId" resultType="java.lang.Integer">
        select role_id from sys_user_role where user_id=#{userId}
    </select>
+    <delete id="deleteRoleId" parameterType="java.lang.Integer" >
+        delete from sys_user_role where user_id = #{userId}
+    </delete>
+    <insert id="insertRoleId">
+        insert into sys_user_role(user_id,role_id) values(#{userId},#{roleId})
+    </insert>
 </mapper>
