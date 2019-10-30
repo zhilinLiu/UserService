@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 
+import com.kando.entity.Role;
 import com.kando.service.UserRoleService;
 import com.kando.service.UserService;
 
@@ -272,6 +273,13 @@ public class UserServiceImpl implements UserService {
         String Key = pageVo.getKey();
         log.info(Key);
         List<User> user1 = userDao.selectAll(Key);
+        user1.forEach(user->{
+            List<Role> roles = userRoleService.selectRoleId(user.getId());
+            if(ObjectUtils.isEmpty(roles)){
+                throw new MeioException(ResultEnum.PARAM_ERROR);
+            }
+            user.setRoles(roles);
+        });
         PageInfo<User> pageInfo = new PageInfo<User>(user1);
         return pageInfo;
     }
