@@ -1,8 +1,11 @@
 package com.kando.dao;
+import com.kando.ao.RoleAo;
+import com.kando.controller.AuthorityController;
 import com.kando.dao.AuthorityDao;
 import com.kando.entity.*;
 import com.kando.service.RoleService;
 import com.kando.service.impl.RoleServiceImpl;
+import com.kando.service.impl.UserRoleServiceImpl;
 import lombok.AllArgsConstructor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -18,14 +22,11 @@ import static org.junit.Assert.*;
 @SpringBootTest
 public class AuthorityDaoTest {
     @Autowired
-    AuthorityDao authorityDao;
-    @Autowired
-    RoleServiceImpl roleService;
-    @Autowired
-    RoleAuthDao roleAuthDao;
+    UserRoleServiceImpl service;
     @Test
     public void  test(){
-        Role role = roleService.selectRole(1);
-        System.out.println(role);
+        List<Role> roles = service.selectRoleId(1);
+        roles.forEach(x-> System.out.println(x));
     }
+
 }
