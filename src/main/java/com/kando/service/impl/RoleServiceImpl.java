@@ -72,14 +72,14 @@ public class RoleServiceImpl implements RoleService {
             role.setCreateUserId("default");
         }
         //插入角色
-        boolean flag=false;
-        if ( roleDao.inserRole(role)) {
+        boolean flag = false;
+        if (roleDao.inserRole(role)) {
             //得到刚插入的角色的ID
             Integer id = role.getId();
             //往角色-权限中间表插入权限
             try {
                 authId.forEach(x -> roleAuthService.insertRoleAuth(id, x));
-                flag=true;
+                flag = true;
             } catch (Exception e) {
                 log.error("给角色插入权限的时候失败了");
                 throw e;
@@ -99,14 +99,14 @@ public class RoleServiceImpl implements RoleService {
     public boolean updateRole(RoleAo role1) {
         List<Integer> authId = role1.getAuthId();
         Role role = new Role();
-        BeanUtils.copyProperties(role1,role);
-        boolean flag=false;
-        if(roleDao.updateRole(role)){
+        BeanUtils.copyProperties(role1, role);
+        boolean flag = false;
+        if (roleDao.updateRole(role)) {
             //删除该角色下的所有权限
             roleAuthService.deleteAllAuth(role.getId());
             //赋予角色修改的权限
-            authId.forEach(x->roleAuthService.insertRoleAuth(role.getId(),x));
-            flag=true;
+            authId.forEach(x -> roleAuthService.insertRoleAuth(role.getId(), x));
+            flag = true;
         }
         return flag;
     }
@@ -121,7 +121,9 @@ public class RoleServiceImpl implements RoleService {
             list.add(authorityDao.selectOne(x.getAuthId()));
         });
         Role role = roleDao.selectRole(id);
-        role.setAuthority(list);
+        if (role != null) {
+            role.setAuthority(list);
+        }
         return role;
 
     }
