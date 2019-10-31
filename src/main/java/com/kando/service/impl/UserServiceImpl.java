@@ -11,6 +11,7 @@ import com.kando.entity.Role;
 import com.kando.service.UserService;
 
 import com.kando.util.MDCode;
+import com.kando.util.UserNotExsistException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -73,7 +74,11 @@ public class UserServiceImpl implements UserService {
         String codePassword = MDCode.EncoderByMd5(password);
         UsernamePasswordToken token = new UsernamePasswordToken(phone, codePassword);
         Subject subject = SecurityUtils.getSubject();
-        subject.login(token);
+        try {
+            subject.login(token);
+        }catch (Exception e){
+            throw new UserNotExsistException("用户不存在或密码错误");
+        }
         User user1 = userDao.selectByphone(phone);
         List<Role> roles = userRoleService.selectRoleId(user1.getId());
         user1.setRoles(roles);
