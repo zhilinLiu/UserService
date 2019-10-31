@@ -21,4 +21,6 @@ public interface RoleService {
     boolean updateRole(RoleAo role);
 
     Role selectRole(Integer id);
+
+    public List<Role> all();
 }

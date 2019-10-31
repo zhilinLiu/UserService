@@ -2,6 +2,8 @@ package com.kando.configuration;
 import com.kando.dao.UserDao;
 import com.kando.entity.User;
 import com.kando.service.impl.RoleServiceImpl;
+import com.kando.util.MDCode;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashSet;
 import java.util.Set;
 @Component
+@Slf4j
 public class MyRealm extends AuthorizingRealm {
 	@Autowired
     private RoleServiceImpl authorityService;
@@ -46,7 +49,6 @@ public class MyRealm extends AuthorizingRealm {
         String password = user.getPassword();
         //第二个参数为数据库查询出的密码
         SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(phone,password, getName());
-        System.out.println("登录成功");
         return simpleAuthenticationInfo;
     }
 }

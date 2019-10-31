@@ -7,6 +7,9 @@ import com.kando.common.exception.ResultEnum;
 import com.kando.entity.User;
 import com.kando.vo.PageVo;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+
 
 /**
  * @author 孙雨佳
@@ -16,15 +19,15 @@ import com.kando.vo.PageVo;
  */
 public interface UserService {
     //手机密码登陆
-    ResultEnum loginByPwd(User user);
+    User loginByPwd(User user);
     //手机验证码登陆-发送验证码
     ResultEnum loginByCode(User user);
     //手机验证码登陆-验证手机验证码
-    ResultEnum loginCheckCode(User user);
+    User loginCheckCode(User user);
     //注册-发送手机验证码
     ResultEnum indexByCode(User user);
     //注册-验证手机验证码
-    ResultEnum indexCheckCode(User user);
+    ResultEnum indexCheckCode(User user) ;
     //注册-绑定邮箱-发送邮箱验证码
     ResultEnum indexBindEmail(User user);
     //注册-绑定邮箱-验证邮箱验证码

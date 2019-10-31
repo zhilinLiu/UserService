@@ -130,4 +130,27 @@ public class RoleController {
         }
         return result;
     }
+
+
+    @RequestMapping("/roleAll")
+    public Result all(){
+        log.info("正在执行  roleAll,接受到的参数为：");
+        Result<List<Role>> result = new Result<>();
+        List<Role> all = service.all();
+        if(all!=null){
+            log.info("查询成功");
+            result.setCode(0);
+            result.setSuccess(true);
+            result.setMessage("查询角色成功");
+            result.setData(all);
+        }else {
+            log.error("查询失败");
+            result.setCode(1);
+            result.setSuccess(false);
+            result.setMessage("查询失败，没有返回数据");
+        }
+        return result;
+    }
+
+
 }

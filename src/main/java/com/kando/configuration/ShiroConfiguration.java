@@ -63,5 +63,7 @@ public class ShiroConfiguration {
         advisor.setSecurityManager(securityManager);
         return advisor;
     }
+
+
 }
 

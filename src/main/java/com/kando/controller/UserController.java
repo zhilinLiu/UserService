@@ -38,12 +38,15 @@ public class UserController {
      */
     @RequestMapping(value = "/loginByPwd", method = RequestMethod.GET)
     public Result loginByPwd(User user) {
+        log.info("is doing loginByPwd.....");
         try {
-            Result result = new Result();
-            ResultEnum resultEnum = userService.loginByPwd(user);
-            result.setCode(resultEnum.getCode());
-            result.setMessage(resultEnum.getMessage());
+            Result<User> result = new Result();
+            User user1 = userService.loginByPwd(user);
+            result.setCode(0);
+            result.setMessage("登录成功");
             result.setSuccess(true);
+            result.setData(user1);
+            log.info("登录成功");
             return result;
         } catch (Exception e) {
             Result result = new Result();
@@ -62,12 +65,14 @@ public class UserController {
 
     @RequestMapping(value = "/loginByCode", method = RequestMethod.GET)
     public Result loginByCode(@Validated User user) {
+        log.info("is doing loginByCode.....");
         try {
             ResultEnum resultEnum = userService.loginByCode(user);
             Result result = new Result();
             result.setCode(resultEnum.getCode());
             result.setMessage(resultEnum.getMessage());
             result.setSuccess(true);
+            log.info("login successful.....");
             return result;
         } catch (Exception e) {
             Result result = new Result();
@@ -86,11 +91,12 @@ public class UserController {
     @RequestMapping(value = "/loginCheckCode", method = RequestMethod.GET)
     public Result checkCode(@Validated User user) {
         try {
-            ResultEnum resultEnum = userService.loginCheckCode(user);
-            Result result = new Result();
-            result.setCode(resultEnum.getCode());
-            result.setMessage(resultEnum.getMessage());
+            User user1 = userService.loginCheckCode(user);
+            Result<User> result = new Result();
+            result.setCode(0);
+            result.setMessage("成功");
             result.setSuccess(true);
+            result.setData(user1);
             return result;
         } catch (Exception e) {
             Result result = new Result();
