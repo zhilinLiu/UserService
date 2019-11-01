@@ -45,7 +45,8 @@ public class ShiroConfiguration {
         shiroFilter.setSecurityManager(securityManager);
         Map<String, String> filterMap = new LinkedHashMap<>();
         filterMap.put("/", "anon");
-        filterMap.put("/auth","token");
+        filterMap.put("/role/*","token");
+        filterMap.put("/auth/*","token");
         shiroFilter.setFilterChainDefinitionMap(filterMap);
 
         return shiroFilter;

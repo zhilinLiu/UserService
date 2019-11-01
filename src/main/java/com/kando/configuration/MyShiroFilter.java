@@ -69,9 +69,8 @@ public class MyShiroFilter extends AuthenticatingFilter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         httpResponse.setContentType("application/json;charset=utf-8");
         httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
-        httpResponse.setHeader("Access-Control-Allow-Origin", HttpContextUtils.getOrigin());
         Result<String> result = new Result<>();
-        result.setCode(1);
+        result.setCode(401);
         result.setMessage("未登录跳转");
         result.setSuccess(false);
         try {

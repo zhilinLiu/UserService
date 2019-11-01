@@ -24,8 +24,8 @@ public class MeioExceptionHandler {
     @ResponseBody
     public Result authorizationException(){
         Result result = new Result();
-        result.setCode(200);
-        result.setMessage("用户不存在或者密码错误");
+        result.setCode(400);
+        result.setMessage("您的权限不足");
         return result;
     }
 

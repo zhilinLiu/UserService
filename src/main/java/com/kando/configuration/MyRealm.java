@@ -1,6 +1,8 @@
 package com.kando.configuration;
 import com.kando.dao.UserDao;
+import com.kando.entity.Role;
 import com.kando.entity.User;
+import com.kando.service.UserRoleService;
 import com.kando.service.impl.RoleServiceImpl;
 import com.kando.util.MDCode;
 import com.kando.util.UserNotExsistException;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 @Component
 @Slf4j
@@ -24,20 +27,24 @@ public class MyRealm extends AuthorizingRealm {
 	@Autowired
     private RoleServiceImpl authorityService;
 	@Autowired
+    private UserRoleService userRoleService;
+	@Autowired
     UserDao userDao;
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         //获取登录名 -- 前端传过来的
         String phone = (String) principalCollection.getPrimaryPrincipal();
         //查询用户名称以及对应的角色 -- 从数据查
-
-
+        User user1 = userDao.selectByphone(phone);
+        List<Role> roles = userRoleService.selectRoleId(user1.getId());
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
         Set<String> set = new HashSet<>();
-//        set.add("youke:c");
-
-
-        simpleAuthorizationInfo.setRoles(set);
+        roles.forEach(role->{
+            role.getAuthority().forEach(authority -> {
+                set.add(authority.getName());
+            });
+        });
+        simpleAuthorizationInfo.setStringPermissions(set);
         return simpleAuthorizationInfo;
     }
 

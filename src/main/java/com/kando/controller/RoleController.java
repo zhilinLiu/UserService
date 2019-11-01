@@ -8,7 +8,10 @@ import com.kando.service.impl.RoleServiceImpl;
 import com.kando.vo.PageVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +26,7 @@ import java.util.List;
  */
 @RestController
 @Slf4j
+@RequestMapping("role")
 public class RoleController {
     @Autowired
     private RoleServiceImpl service;
@@ -151,6 +155,9 @@ public class RoleController {
         }
         return result;
     }
-
-
+    @RequestMapping("/test")
+    @RequiresPermissions("SuperPower")
+    public String test(){
+        return "权限测试";
+    }
 }
