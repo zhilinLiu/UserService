@@ -5,6 +5,8 @@ import com.google.gson.Gson;
 import com.kando.common.utils.HttpContextUtils;
 import com.kando.entity.Result;
 import com.kando.entity.Role;
+import com.kando.util.TokenNullException;
+import com.kando.vo.PageVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -23,7 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- *lzl
+ * lzl
  */
 @Slf4j
 public class MyShiroFilter extends AuthenticatingFilter {
@@ -36,19 +38,22 @@ public class MyShiroFilter extends AuthenticatingFilter {
     @Override
     protected AuthenticationToken createToken(ServletRequest request, ServletResponse response) throws Exception {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        //从request里得到tokenId
-        String tokenId = getRequestToken(httpServletRequest);
-        String UseramePassword = "username,password";
-        if (tokenId != null) {
-
-            UseramePassword = (String) stringRedisTemplate.opsForHash().get("token", tokenId);
+        try {
+//            从request里得到tokenId
+            String tokenId = getRequestToken(httpServletRequest);
+            String UseramePassword = (String) stringRedisTemplate.opsForHash().get("token", tokenId);
+            String[] split = UseramePassword.split(",");
+            String userName = split[0];
+            String passWord = split[1];
+            UsernamePasswordToken myshiroToken = new UsernamePasswordToken(userName, passWord);
+            return myshiroToken;
+        }catch (TokenNullException e){
+            //没从请求头获取到token
+            return new UsernamePasswordToken("NullToken", "null");
+        }catch (NullPointerException e){
+            //请求头获取的token从redis没拿到
+            return new UsernamePasswordToken("NullPointer", "null");
         }
-        String[] split = UseramePassword.split(",");
-        String userName = split[0];
-        String passWord = split[1];
-
-        UsernamePasswordToken myshiroToken = new UsernamePasswordToken(userName, passWord);
-        return myshiroToken;
     }
 
     @Override
@@ -59,29 +64,54 @@ public class MyShiroFilter extends AuthenticatingFilter {
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
         boolean flag = executeLogin(request, response);
-        log.info("is doing onAccessDenied,the result is "+flag);
+        log.info("is doing onAccessDenied,the result is " + flag);
         return flag;
     }
 
     @Override
     protected boolean onLoginFailure(AuthenticationToken token, AuthenticationException e, ServletRequest request, ServletResponse response) {
-        log.info("is doing onLoginFailure,that will return false ");
+//        log.info("is doing onLoginFailure,that will return false ");
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         httpResponse.setContentType("application/json;charset=utf-8");
         httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
-        Result<String> result = new Result<>();
-        result.setCode(401);
-        result.setMessage("未登录跳转");
-        result.setSuccess(false);
-        try {
-            httpResponse.getWriter().print(JSON.toJSONString(result));
-        } catch (IOException ex) {
-            log.error("onLoginFailure  failed");
+        String message = e.getMessage();
+        String nullToken ="Submitted credentials for token [org.apache.shiro.authc.UsernamePasswordToken - NullToken, rememberMe=false] did not match the expected credentials.";
+        String NullPointer ="Submitted credentials for token [org.apache.shiro.authc.UsernamePasswordToken - NullPointer, rememberMe=false] did not match the expected credentials.";
+        if(message.equals(nullToken)){
+            Result<String> result = new Result<>();
+            result.setCode(401);
+            result.setMessage("没有登录禁止访问");
+            result.setSuccess(false);
+            try {
+                httpResponse.getWriter().print(JSON.toJSONString(result));
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }else if(message.equals(NullPointer)){
+            Result<String> result = new Result<>();
+            result.setCode(402);
+            result.setMessage("token过期，请重新登录");
+            result.setSuccess(false);
+            try {
+                httpResponse.getWriter().print(JSON.toJSONString(result));
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }else {
+            Result<String> result = new Result<>();
+            result.setCode(401);
+            result.setMessage("没有登录禁止访问");
+            result.setSuccess(false);
+            try {
+                httpResponse.getWriter().print(JSON.toJSONString(result));
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
         return false;
     }
 
-    private String getRequestToken(HttpServletRequest httpRequest) {
+    private String getRequestToken(HttpServletRequest httpRequest) throws TokenNullException {
         //从header中获取token
         String token = httpRequest.getHeader("token");
 
@@ -90,7 +120,11 @@ public class MyShiroFilter extends AuthenticatingFilter {
             token = httpRequest.getParameter("token");
         }
 
+        //如果都没有，则抛出异常
+        if(token==null||token.equals("")){
+            throw new TokenNullException("token为空");
+        }
 
-        return token == null || token.equals("") ? null : token;
+        return token;
     }
 }

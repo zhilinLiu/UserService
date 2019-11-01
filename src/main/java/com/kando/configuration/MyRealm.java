@@ -4,6 +4,7 @@ import com.kando.entity.Role;
 import com.kando.entity.User;
 import com.kando.service.UserRoleService;
 import com.kando.service.impl.RoleServiceImpl;
+import com.kando.service.impl.UserRoleServiceImpl;
 import com.kando.util.MDCode;
 import com.kando.util.UserNotExsistException;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,7 @@ public class MyRealm extends AuthorizingRealm {
 	@Autowired
     private RoleServiceImpl authorityService;
 	@Autowired
-    private UserRoleService userRoleService;
+    private UserRoleServiceImpl userRoleService;
 	@Autowired
     UserDao userDao;
     @Override
@@ -52,12 +53,12 @@ public class MyRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
         //获取用户名，前端传的那个
         String phone = authenticationToken.getPrincipal().toString();
+        if(phone.equals("NullToken")||phone.equals("NullPointer")){
+            return null;
+        }
         //按照用户名从从数据库查询出密码
         User user = userDao.selectByphone(phone);
-        String password="default";
-        if(user!=null){
-            password = user.getPassword();
-        }
+        String password = user.getPassword();
         //第二个参数为数据库查询出的密码
         SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(phone,password, getName());
         return simpleAuthenticationInfo;
