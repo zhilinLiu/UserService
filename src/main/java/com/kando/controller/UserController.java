@@ -45,7 +45,8 @@ public class UserController {
             Result<User> result = new Result();
             User user1 = userService.loginByPwd(user);
             result.setCode(0);
-            result.setMessage(user1!=null?userService.generateToken(user1):"登录成功但是未设置token");
+            result.setMessage("成功");
+            result.setToken(user1!=null?userService.generateToken(user1):"Notoken");
             result.setSuccess(true);
             result.setData(user1);
             log.info("登录成功");
@@ -97,7 +98,8 @@ public class UserController {
             User user1 = userService.loginCheckCode(user);
             Result<User> result = new Result();
             result.setCode(0);
-            result.setMessage(user1!=null?userService.generateToken(user1):"登录成功但是未设置token");
+            result.setToken(user1!=null?userService.generateToken(user1):"Notoken");
+            result.setMessage("成功");
             result.setSuccess(true);
             result.setData(user1);
             return result;
