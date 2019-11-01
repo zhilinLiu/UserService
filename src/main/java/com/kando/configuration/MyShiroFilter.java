@@ -23,6 +23,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * lzl
@@ -41,7 +42,10 @@ public class MyShiroFilter extends AuthenticatingFilter {
         try {
 //            从request里得到tokenId
             String tokenId = getRequestToken(httpServletRequest);
-            String UseramePassword = (String) stringRedisTemplate.opsForHash().get("token", tokenId);
+            String UseramePassword = (String) stringRedisTemplate.opsForValue().get("token:"+tokenId);
+            stringRedisTemplate.expire("token:"+tokenId,10, TimeUnit.MINUTES);
+            Long expire = stringRedisTemplate.getExpire("token:" + tokenId,TimeUnit.MINUTES);
+            log.info("接受到的token超时时间为:"+expire);
             String[] split = UseramePassword.split(",");
             String userName = split[0];
             String passWord = split[1];

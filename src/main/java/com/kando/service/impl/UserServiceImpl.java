@@ -398,8 +398,7 @@ public class UserServiceImpl implements UserService {
         String  uuid = UUID.randomUUID().toString();
         String UsernamePassword = user.getPhone()+","+user.getPassword();
         //存入redis
-        redis.opsForHash().put("token",uuid,UsernamePassword);
-        redis.expire("token",10,TimeUnit.MINUTES);
+        redis.opsForValue().set("token:"+uuid,UsernamePassword,10,TimeUnit.MINUTES);
         return uuid;
     }
 }
