@@ -1,8 +1,11 @@
 package com.kando.service;
 
-import com.alibaba.fastjson.JSON;
-import com.kando.entity.User;
+
+
+import com.kando.configuration.FTPUtils;
 import com.kando.service.impl.UserServiceImpl;
+import org.apache.commons.net.ftp.FTPClient;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +14,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -27,15 +31,9 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void test2(){
-        User user = new User();
-        user.setPhone("12121");
-        User user1;
-
-        String user2 = redis.opsForHash().get("133", "user").toString();
-        User user3 = JSON.parseObject(user2, User.class);
-        System.out.println(user3);
-
+    public void test2() throws IOException {
+        boolean flag = FTPUtils.uploadFile("666.jpg", "D:\\666.jpg");
+        Assert.assertEquals(true, flag);
 
     }
 }
