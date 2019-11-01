@@ -295,9 +295,9 @@ public class UserController {
      */
 
     @RequestMapping(value = "/updateUser1", method = RequestMethod.POST)
-    public Result updateUser1(@RequestBody UserAo user1) {
-        User user = new User();
-        BeanUtils.copyProperties(user1,user);
+    public Result updateUser1(@RequestBody User user) {
+//        User user = new User();
+//        BeanUtils.copyProperties(user1,user);
         try {
             log.info("接收到的参数为"+user);
             ResultEnum resultEnum = userService.updateUser1(user);

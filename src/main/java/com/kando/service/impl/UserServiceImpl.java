@@ -1,6 +1,9 @@
 package com.kando.service.impl;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -8,9 +11,13 @@ import java.util.concurrent.TimeUnit;
 import com.kando.entity.Role;
 import com.kando.service.UserService;
 
+import com.kando.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -22,8 +29,6 @@ import com.kando.common.exception.ResultEnum;
 import com.kando.dao.UserDao;
 import com.kando.dto.Result;
 import com.kando.entity.User;
-import com.kando.util.Random;
-import com.kando.util.TestDate;
 import com.kando.vo.PageVo;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,24 +54,35 @@ public class UserServiceImpl implements UserService {
 
 
     /**
-     * @return ResultEnum
+     * @return User
      * @Title: loginByPwd
      * @Description:登陆操作-手机号密码登陆
      */
     @Override
-    public ResultEnum loginByPwd(User user) {
+    public User loginByPwd(User user) {
         String password = user.getPassword();
         String phone = user.getPhone();
         if (StringUtils.isBlank(password) || StringUtils.isBlank(phone)) {
             //手机号或密码不能为空
             throw new MeioException(ResultEnum.PHONE_STOCK_ERROR);
         }
-        User user1 = userDao.login(phone, password);
-        if (ObjectUtils.isEmpty(user1)) {
-            //用户不存在
-            throw new MeioException(ResultEnum.USER_NOT_EXIST_ERROR);
+//        User user1 = userDao.login(phone, password);
+        String codePassword = MDCode.EncoderByMd5(password);
+        UsernamePasswordToken token = new UsernamePasswordToken(phone, codePassword);
+        Subject subject = SecurityUtils.getSubject();
+        try {
+            subject.login(token);
+        } catch (Exception e) {
+            throw new UserNotExsistException("用户不存在或密码错误");
         }
-        return ResultEnum.SUCCESS;
+        User user1 = userDao.selectByphone(phone);
+        List<Role> roles = userRoleService.selectRoleId(user1.getId());
+        user1.setRoles(roles);
+//        if (ObjectUtils.isEmpty(user1)) {
+//            //用户不存在
+//            throw new MeioException(ResultEnum.USER_NOT_EXIST_ERROR);
+//        }
+        return user1;
 
 
     }
@@ -81,22 +97,25 @@ public class UserServiceImpl implements UserService {
         String seccode = Random.getRandom();
         String phone = user.getPhone();
         redis.opsForValue().set(phone, seccode, 5, TimeUnit.MINUTES);
-        System.out.println("登陆");
-        System.out.println(seccode);
         if (ObjectUtils.isEmpty(userDao.selectByphone(phone))) {
             //用户不存在
             throw new MeioException(ResultEnum.USER_NOT_EXIST_ERROR);
         }
+        Send send = new Send();
+        Boolean bool = send.SendSms(phone);
+        log.info(""+bool);
+        System.out.println("登陆");
+        System.out.println(seccode);
         return ResultEnum.SUCCESS;
     }
 
     /**
-     * @return ResultEnum
+     * @return User
      * @Title: loginCheckCode
      * @Description: 登陆操作-手机短信登陆-验证验证码
      */
     @Override
-    public ResultEnum loginCheckCode(User user) {
+    public User loginCheckCode(User user) {
         String phone = user.getPhone();
         String seccode1 = redis.opsForValue().get(phone);
         String seccode = user.getSeccode();
@@ -109,7 +128,12 @@ public class UserServiceImpl implements UserService {
             //手机或验证码不正确
             throw new MeioException(ResultEnum.PHONE_STOCK_ERROR);
         }
-        return ResultEnum.SUCCESS;
+        //得到user
+        User user1 = userDao.selectByphone(phone);
+        //得到user的角色
+        List<Role> roles = userRoleService.selectRoleId(user1.getId());
+        user1.setRoles(roles);
+        return user1;
 
     }
 
@@ -144,6 +168,8 @@ public class UserServiceImpl implements UserService {
         String seccode = user.getSeccode();
         String user_name = user.getUserName();
         String password = user.getPassword();
+        //加密
+        String newPassword = MDCode.EncoderByMd5(password);
         Integer sex = user.getSex();
         log.info("验证手机验证码");
         if (StringUtils.isBlank(seccode1)) {
@@ -158,13 +184,10 @@ public class UserServiceImpl implements UserService {
         user1.setPhone(phone);
         user1.setSex(sex);
         user1.setUserName(user_name);
-        user1.setPassword(password);
-        TestDate date = new TestDate();
-        user1.setCreateTime(date.getDate());
-        Integer a = userDao.index(user1);
-        if(a<=0){
-            throw new MeioException(ResultEnum.UNKNOWN_ERROR);
-        }
+        user1.setPassword(newPassword);
+        //TestDate date = new TestDate();
+        Date date = new Date();
+        user1.setCreateTime(date);
 //					//添加默认角色--访客
 //					if (role.equals("1")){
 //						authorityService.addGuest(phone);
@@ -173,6 +196,16 @@ public class UserServiceImpl implements UserService {
 //					}else if(role.equals("3")){
 //						authorityService.addSpecialist(phone);
 //		}
+        Integer a = userDao.index(user1);
+        if (a <= 0) {
+            throw new MeioException(ResultEnum.UNKNOWN_ERROR);
+        }
+        Integer userId =userDao.selectByphone(phone).getId();
+        ArrayList<Integer> roleIdList = user.getRoleId();
+        roleIdList.forEach(roleId -> {
+            //插入新的用户角色
+            userRoleService.insertRoleId(userId, roleId);
+        });
         return ResultEnum.SUCCESS;
     }
 
@@ -191,13 +224,13 @@ public class UserServiceImpl implements UserService {
         }
         if (ObjectUtils.isNotEmpty(userDao.selectByemail(email))) {
             //邮箱已经被绑定
-            throw new  MeioException(ResultEnum.EMAIL_IS_EXIST_ERROR);
+            throw new MeioException(ResultEnum.EMAIL_IS_EXIST_ERROR);
         }
-            String seccode = Random.getRandom();
-            redis.opsForValue().set(email, seccode, 5, TimeUnit.MINUTES);
-            log.info(seccode);
-            log.info("发送邮箱验证码");
-            return ResultEnum.SUCCESS;
+        String seccode = Random.getRandom();
+        redis.opsForValue().set(email, seccode, 5, TimeUnit.MINUTES);
+        log.info(seccode);
+        log.info("发送邮箱验证码");
+        return ResultEnum.SUCCESS;
     }
 
     /**
@@ -227,7 +260,7 @@ public class UserServiceImpl implements UserService {
         user1.setPhone(phone);
         user1.setEmail(email);
         Integer a = userDao.updateEmail(user1);
-        if(a<=0){
+        if (a <= 0) {
             throw new MeioException(ResultEnum.EMAIL_ERROR);
         }
         return ResultEnum.SUCCESS;
@@ -246,7 +279,7 @@ public class UserServiceImpl implements UserService {
             throw new MeioException(ResultEnum.PARAM_ERROR);
         }
         Integer a = userDao.deleteByid(id);
-        if(a<=0){
+        if (a <= 0) {
             //删除用户失败
             throw new MeioException(ResultEnum.DELETE_USER_ERROR);
         }
@@ -266,9 +299,9 @@ public class UserServiceImpl implements UserService {
         String Key = pageVo.getKey();
         log.info(Key);
         List<User> user1 = userDao.selectAll(Key);
-        user1.forEach(user->{
-            List<Role> roles=userRoleService.selectRoleId(user.getId());
-            if(roles==null){
+        user1.forEach(user -> {
+            List<Role> roles = userRoleService.selectRoleId(user.getId());
+            if (roles == null) {
                 throw new MeioException(ResultEnum.PARAM_ERROR);
             }
             user.setRoles(roles);
@@ -284,20 +317,20 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public User updateUser(Integer id) {
-        if(ObjectUtils.isEmpty(id)){
+        if (ObjectUtils.isEmpty(id)) {
             //id不能为空
             throw new MeioException(ResultEnum.PARAM_ERROR);
         }
         User user1 = userDao.selectByid(id);
-        if (ObjectUtils.isEmpty(user1)){
+        if (ObjectUtils.isEmpty(user1)) {
             //用户不存在
             throw new MeioException(ResultEnum.USER_NOT_EXIST_ERROR);
         }
-            List<Role> roles=userRoleService.selectRoleId(id);
-        if(roles==null){
-            throw new MeioException(ResultEnum.PARAM_ERROR);
-        }
-            user1.setRoles(roles);
+        List<Role> roles = userRoleService.selectRoleId(id);
+//        if (roles == null) {
+//            throw new MeioException(ResultEnum.PARAM_ERROR);
+//        }
+        user1.setRoles(roles);
         return user1;
     }
 
@@ -319,10 +352,15 @@ public class UserServiceImpl implements UserService {
         user1.setEmail(user.getEmail());
         user1.setId(userId);
         user1.setRoles(user.getRoles());
+        if(userId==null){
+            throw new MeioException(ResultEnum.PARAM_ERROR);
+        }
+        //根据用户id删除所有角色
         userRoleService.deleteRoleId(userId);
         ArrayList<Integer> roleIdList = user.getRoleId();
-        roleIdList.forEach(roleId->{
-            userRoleService.insertRoleId(userId,roleId);
+        roleIdList.forEach(roleId -> {
+            //插入新的用户角色
+            userRoleService.insertRoleId(userId, roleId);
         });
         userDao.update(user1);
         return ResultEnum.SUCCESS;

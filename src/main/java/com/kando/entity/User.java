@@ -17,7 +17,7 @@ import javax.validation.constraints.NotBlank;
  */
 @Data
 public class User implements Serializable {
-
+    private static final long serialVersionUID = 1L;
     private Integer id;//主键id
 
     private String userName;//用户名
@@ -34,7 +34,7 @@ public class User implements Serializable {
 
     private Integer status;//账号状态
 
-    private List<Role> roles;//权限
+    private List<Role> roles;//角色
 
     private String seccode;//验证码
 
