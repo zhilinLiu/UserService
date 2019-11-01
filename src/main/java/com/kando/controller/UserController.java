@@ -1,7 +1,6 @@
 package com.kando.controller;
 
 
-import com.kando.common.exception.MeioException;
 import com.kando.common.exception.ResultEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -17,6 +16,7 @@ import com.kando.dto.Result;
 import com.kando.entity.User;
 import com.kando.service.UserService;
 import com.kando.vo.PageVo;
+
 
 /**
  * @author 孙雨佳
@@ -37,12 +37,17 @@ public class UserController {
      */
     @RequestMapping(value = "/loginByPwd", method = RequestMethod.GET)
     public Result loginByPwd(User user) {
+        log.info("is doing loginByPwd.....");
         try {
-            Result result = new Result();
-            ResultEnum resultEnum = userService.loginByPwd(user);
-            result.setCode(resultEnum.getCode());
-            result.setMessage(resultEnum.getMessage());
+            Result<User> result = new Result();
+            User user1 = userService.loginByPwd(user);
+            result.setCode(0);
+            result.setMessage("成功");
+            result.setToken(user1!=null?userService.generateToken(user1):"Notoken");
             result.setSuccess(true);
+            result.setData(user1);
+            log.info("登录成功");
+
             return result;
         } catch (Exception e) {
             Result result = new Result();
@@ -61,12 +66,9 @@ public class UserController {
 
     @RequestMapping(value = "/loginByCode", method = RequestMethod.GET)
     public Result loginByCode(@Validated User user) {
+        log.info("is doing loginByCode.....");
         try {
-            ResultEnum resultEnum = userService.loginByCode(user);
-            Result result = new Result();
-            result.setCode(resultEnum.getCode());
-            result.setMessage(resultEnum.getMessage());
-            result.setSuccess(true);
+            Result result = userService.loginByCode(user);
             return result;
         } catch (Exception e) {
             Result result = new Result();
@@ -75,6 +77,7 @@ public class UserController {
             return result;
         }
     }
+
 
     /**
      * @return Result    返回类型
@@ -85,11 +88,13 @@ public class UserController {
     @RequestMapping(value = "/loginCheckCode", method = RequestMethod.GET)
     public Result checkCode(@Validated User user) {
         try {
-            ResultEnum resultEnum = userService.loginCheckCode(user);
-            Result result = new Result();
-            result.setCode(resultEnum.getCode());
-            result.setMessage(resultEnum.getMessage());
+            User user1 = userService.loginCheckCode(user);
+            Result<User> result = new Result();
+            result.setCode(0);
+            result.setToken(user1!=null?userService.generateToken(user1):"Notoken");
+            result.setMessage("成功");
             result.setSuccess(true);
+            result.setData(user1);
             return result;
         } catch (Exception e) {
             Result result = new Result();
@@ -111,11 +116,7 @@ public class UserController {
         try {
             User user = new User();
             user.setPhone(phone);
-            ResultEnum resultEnum = userService.indexByCode(user);
-            Result result = new Result();
-            result.setCode(resultEnum.getCode());
-            result.setMessage(resultEnum.getMessage());
-            result.setSuccess(true);
+            Result result = userService.indexByCode(user);
             return result;
         } catch (Exception e) {
             Result result = new Result();
@@ -200,7 +201,7 @@ public class UserController {
     }
 
     /**
-     * @return PageInfo<User>    返回类型
+     * @return Result   返回类型
      * @Title: selectUser
      * @Description: TODO(查询用户)
      */
@@ -289,7 +290,10 @@ public class UserController {
 
     @RequestMapping(value = "/updateUser1", method = RequestMethod.POST)
     public Result updateUser1(@RequestBody User user) {
+//        User user = new User();
+//        BeanUtils.copyProperties(user1,user);
         try {
+            log.info("接收到的参数为"+user);
             ResultEnum resultEnum = userService.updateUser1(user);
             Result result = new Result();
             result.setCode(resultEnum.getCode());
@@ -304,4 +308,5 @@ public class UserController {
             return result;
         }
     }
+
 }

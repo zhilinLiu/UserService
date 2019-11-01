@@ -13,10 +13,15 @@ import java.util.Date;
 */
 @Data
 public class Organization {
-	private Integer id;
-    private String name;
-    private String orgId;
-    private Integer status;
-    private Date createTime;
+
+	private Integer id;//单位ID
+
+    private String name;//单位名称
+
+    private String orgId;//上级单位ID
+
+    private Integer status;//状态
+
+    private Date createTime;//创建时间
 
 }

@@ -1,32 +1,37 @@
 package com.kando.service;
 
 
-import java.util.Map;
 
+import com.aliyuncs.CommonResponse;
 import com.github.pagehelper.PageInfo;
 import com.kando.common.exception.ResultEnum;
 import com.kando.dto.Result;
 import com.kando.entity.User;
 import com.kando.vo.PageVo;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+
 
 /**
  * @author 孙雨佳
  * @ClassName: UserService
- * @Description: 业务层接口
- * @date 2019年10月23日
+ * @Description: 用户-业务层接口
+ * @date 2019年10月30日修改
  */
 public interface UserService {
+    //生成token
+    public String generateToken(User user);
     //手机密码登陆
-    ResultEnum loginByPwd(User user);
+    User loginByPwd(User user);
     //手机验证码登陆-发送验证码
-    ResultEnum loginByCode(User user);
+    Result loginByCode(User user);
     //手机验证码登陆-验证手机验证码
-    ResultEnum loginCheckCode(User user);
+    User loginCheckCode(User user);
     //注册-发送手机验证码
-    ResultEnum indexByCode(User user);
+    Result indexByCode(User user);
     //注册-验证手机验证码
-    ResultEnum indexCheckCode(User user);
+    ResultEnum indexCheckCode(User user) ;
     //注册-绑定邮箱-发送邮箱验证码
     ResultEnum indexBindEmail(User user);
     //注册-绑定邮箱-验证邮箱验证码

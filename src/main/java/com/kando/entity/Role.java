@@ -14,7 +14,9 @@ public class Role implements Serializable {
     private String description;
 
     private Integer status;
+
     private Date createTime;
+
     private String createUserId;
 
     private List<Authority> authority;

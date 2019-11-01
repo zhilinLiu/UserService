@@ -9,11 +9,15 @@ import org.apache.shiro.util.ThreadContext;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.filter.DelegatingFilterProxy;
 
+import javax.servlet.Filter;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -24,9 +28,6 @@ import java.util.Map;
  */
 @Configuration
 public class ShiroConfiguration {
-//    @Bean
-//    public MyRealm myRealm(){return new MyRealm();}
-
 
     @Bean("securityManager")
     public SecurityManager securityManager(MyRealm oAuth2Realm) {
@@ -36,11 +37,17 @@ public class ShiroConfiguration {
     }
 
     @Bean("shiroFilter")
-    public ShiroFilterFactoryBean shirFilter(SecurityManager securityManager) {
+    public ShiroFilterFactoryBean shirFilter(SecurityManager securityManager,StringRedisTemplate stringRedisTemplate) {
         ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
+        HashMap<String, Filter> filters = new HashMap<>();
+        filters.put("token",new MyShiroFilter(stringRedisTemplate));
+        shiroFilter.setFilters(filters);
         shiroFilter.setSecurityManager(securityManager);
         Map<String, String> filterMap = new LinkedHashMap<>();
         filterMap.put("/", "anon");
+        filterMap.put("/role/roleAll", "anon");
+        filterMap.put("/role/*","token");
+        filterMap.put("/auth/*","token");
         shiroFilter.setFilterChainDefinitionMap(filterMap);
 
         return shiroFilter;
@@ -63,5 +70,7 @@ public class ShiroConfiguration {
         advisor.setSecurityManager(securityManager);
         return advisor;
     }
+
+
 }
 

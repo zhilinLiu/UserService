@@ -8,7 +8,10 @@ import com.kando.service.impl.RoleServiceImpl;
 import com.kando.vo.PageVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +26,7 @@ import java.util.List;
  */
 @RestController
 @Slf4j
+@RequestMapping("role")
 public class RoleController {
     @Autowired
     private RoleServiceImpl service;
@@ -129,5 +133,31 @@ public class RoleController {
             result.setMessage("查询失败，没有返回数据");
         }
         return result;
+    }
+
+
+    @RequestMapping("/roleAll")
+    public Result all(){
+        log.info("正在执行  roleAll,接受到的参数为：");
+        Result<List<Role>> result = new Result<>();
+        List<Role> all = service.all();
+        if(all!=null){
+            log.info("查询成功");
+            result.setCode(0);
+            result.setSuccess(true);
+            result.setMessage("查询角色成功");
+            result.setData(all);
+        }else {
+            log.error("查询失败");
+            result.setCode(1);
+            result.setSuccess(false);
+            result.setMessage("查询失败，没有返回数据");
+        }
+        return result;
+    }
+    @RequestMapping("/test")
+    @RequiresPermissions("SuperPower")
+    public String test(){
+        return "权限测试";
     }
 }
