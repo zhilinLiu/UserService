@@ -1,22 +1,30 @@
 package com.kando.controller;
 
 
-import com.kando.common.exception.MeioException;
+import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.kando.common.exception.ResultEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.github.pagehelper.PageInfo;
 import com.kando.dto.Result;
 import com.kando.entity.User;
 import com.kando.service.UserService;
 import com.kando.vo.PageVo;
+
+import javax.imageio.ImageIO;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.util.concurrent.TimeUnit;
+
 
 /**
  * @author 孙雨佳
@@ -29,6 +37,47 @@ import com.kando.vo.PageVo;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private DefaultKaptcha defaultKaptcha;
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
+    private Long AUTH_CODE_EXPIRE_SECONDS;
+
+    private String authCodeKey = "1";
+    //生成验证码
+    @RequestMapping(value = "/image", method = RequestMethod.GET)//隐藏接口
+    public void defaultKaptcha(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
+        byte[] captchaChallengeAsJpeg = null;
+        ByteArrayOutputStream jpegOutputStream = new ByteArrayOutputStream();
+        try {
+            //生产验证码字符串并保存到redis中
+            String createText = defaultKaptcha.createText();
+            log.debug("image code is:"+createText);
+            redisTemplate.opsForValue().set(authCodeKey,createText);
+       //   redis.opsForValue().set(email, seccode, 5, TimeUnit.MINUTES);
+            String ss = redisTemplate.opsForValue().get(authCodeKey).toString();
+            //使用生产的验证码字符串返回一个BufferedImage对象并转为byte写入到byte数组中
+            BufferedImage challenge = defaultKaptcha.createImage(createText);
+            ImageIO.write(challenge, "jpg", jpegOutputStream);
+        } catch (IllegalArgumentException e) {
+            httpServletResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        //定义response输出类型为image/jpeg类型，使用response输出流输出图片的byte数组
+        captchaChallengeAsJpeg = jpegOutputStream.toByteArray();
+        httpServletResponse.setHeader("Cache-Control", "no-store");
+        httpServletResponse.setHeader("Pragma", "no-cache");
+        httpServletResponse.setDateHeader("Expires", 0);
+        httpServletResponse.setContentType("image/jpeg");
+        ServletOutputStream responseOutputStream = httpServletResponse.getOutputStream();
+        responseOutputStream.write(captchaChallengeAsJpeg);
+        responseOutputStream.flush();
+        responseOutputStream.close();
+    }
+
 
     /**
      * @return Result   返回类型
@@ -65,7 +114,7 @@ public class UserController {
      */
 
     @RequestMapping(value = "/loginByCode", method = RequestMethod.GET)
-    public Result loginByCode(@Validated User user) {
+    public Result loginByCode(@Validated User user,HttpServletResponse httpServletResponse) {
         log.info("is doing loginByCode.....");
         try {
             Result result = userService.loginByCode(user);

@@ -1,6 +1,8 @@
 package com.kando.service.impl;
 
-import java.util.HashMap;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -79,13 +81,7 @@ public class UserServiceImpl implements UserService {
         User user1 = userDao.selectByphone(phone);
         List<Role> roles = userRoleService.selectRoleId(user1.getId());
         user1.setRoles(roles);
-//        if (ObjectUtils.isEmpty(user1)) {
-//            //用户不存在
-//            throw new MeioException(ResultEnum.USER_NOT_EXIST_ERROR);
-//        }
         return user1;
-
-
     }
 
     /**
@@ -213,7 +209,6 @@ public class UserServiceImpl implements UserService {
         user1.setSex(sex);
         user1.setUserName(user_name);
         user1.setPassword(newPassword);
-        //TestDate date = new TestDate();
         Date date = new Date();
         user1.setCreateTime(date);
 //					//添加默认角色--访客
@@ -355,9 +350,6 @@ public class UserServiceImpl implements UserService {
             throw new MeioException(ResultEnum.USER_NOT_EXIST_ERROR);
         }
         List<Role> roles = userRoleService.selectRoleId(id);
-//        if (roles == null) {
-//            throw new MeioException(ResultEnum.PARAM_ERROR);
-//        }
         user1.setRoles(roles);
         return user1;
     }
