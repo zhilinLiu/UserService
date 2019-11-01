@@ -19,6 +19,8 @@ import com.kando.entity.User;
 import com.kando.service.UserService;
 import com.kando.vo.PageVo;
 
+import java.util.UUID;
+
 /**
  * @author 孙雨佳
  * @ClassName: UserController
@@ -43,10 +45,11 @@ public class UserController {
             Result<User> result = new Result();
             User user1 = userService.loginByPwd(user);
             result.setCode(0);
-            result.setMessage("登录成功");
+            result.setMessage(user1!=null?userService.generateToken(user1):"登录成功但是未设置token");
             result.setSuccess(true);
             result.setData(user1);
             log.info("登录成功");
+
             return result;
         } catch (Exception e) {
             Result result = new Result();
@@ -94,7 +97,7 @@ public class UserController {
             User user1 = userService.loginCheckCode(user);
             Result<User> result = new Result();
             result.setCode(0);
-            result.setMessage("成功");
+            result.setMessage(user1!=null?userService.generateToken(user1):"登录成功但是未设置token");
             result.setSuccess(true);
             result.setData(user1);
             return result;
@@ -314,4 +317,5 @@ public class UserController {
             return result;
         }
     }
+
 }

@@ -18,6 +18,8 @@ import java.security.NoSuchAlgorithmException;
  * @date 2019年10月30日修改
  */
 public interface UserService {
+    //生成token
+    public String generateToken(User user);
     //手机密码登陆
     User loginByPwd(User user);
     //手机验证码登陆-发送验证码

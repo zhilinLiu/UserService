@@ -5,6 +5,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 
@@ -364,5 +365,13 @@ public class UserServiceImpl implements UserService {
         });
         userDao.update(user1);
         return ResultEnum.SUCCESS;
+    }
+    public String generateToken(User user){
+        String  uuid = UUID.randomUUID().toString();
+        String UsernamePassword = user.getPhone()+","+user.getPassword();
+        //存入redis
+        redis.opsForHash().put("token",uuid,UsernamePassword);
+        redis.expire("token",10,TimeUnit.MINUTES);
+        return uuid;
     }
 }

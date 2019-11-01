@@ -3,6 +3,7 @@ import com.kando.dao.UserDao;
 import com.kando.entity.User;
 import com.kando.service.impl.RoleServiceImpl;
 import com.kando.util.MDCode;
+import com.kando.util.UserNotExsistException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -46,7 +47,10 @@ public class MyRealm extends AuthorizingRealm {
         String phone = authenticationToken.getPrincipal().toString();
         //按照用户名从从数据库查询出密码
         User user = userDao.selectByphone(phone);
-        String password = user.getPassword();
+        String password="default";
+        if(user!=null){
+            password = user.getPassword();
+        }
         //第二个参数为数据库查询出的密码
         SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(phone,password, getName());
         return simpleAuthenticationInfo;
