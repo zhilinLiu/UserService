@@ -1,7 +1,5 @@
 package com.kando.service.impl;
 
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -9,7 +7,10 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 
+import com.alibaba.fastjson.JSON;
+import com.aliyuncs.CommonResponse;
 import com.kando.entity.Role;
+import com.kando.entity.SendSms;
 import com.kando.service.UserService;
 
 import com.kando.util.*;
@@ -94,20 +95,31 @@ public class UserServiceImpl implements UserService {
      * @Description: 登陆操作-手机短信登陆-发送验证码
      */
     @Override
-    public ResultEnum loginByCode(User user) {
-        String seccode = Random.getRandom();
+    public Result loginByCode(User user) {
         String phone = user.getPhone();
-        redis.opsForValue().set(phone, seccode, 5, TimeUnit.MINUTES);
         if (ObjectUtils.isEmpty(userDao.selectByphone(phone))) {
             //用户不存在
             throw new MeioException(ResultEnum.USER_NOT_EXIST_ERROR);
         }
         Send send = new Send();
-        Boolean bool = send.SendSms(phone);
-        log.info(""+bool);
-        System.out.println("登陆");
-        System.out.println(seccode);
-        return ResultEnum.SUCCESS;
+        String seccode = Random.getRandom();
+        CommonResponse response = send.SendSms(phone,seccode);
+        redis.opsForValue().set(phone, seccode, 5, TimeUnit.MINUTES);
+        String result= response.getData();
+        SendSms sendSms= JSON.parseObject(result, SendSms.class);
+        String code = sendSms.getCode();
+        Integer scode = 0;
+        Boolean bool = true;
+        String message = sendSms.getMessage();
+        if(!code.equals("OK")){
+        scode = 1;
+        bool = false;
+        }
+        Result result1 = new Result();
+        result1.setCode(scode);
+        result1.setMessage(message);
+        result1.setSuccess(bool);
+        return result1;
     }
 
     /**
@@ -144,17 +156,33 @@ public class UserServiceImpl implements UserService {
      * @Description: 注册操作-发送手机验证码
      */
     @Override
-    public ResultEnum indexByCode(User user) {
-        String seccode = Random.getRandom();
-        String phone = user.getPhone();
-        redis.opsForValue().set(phone, seccode, 5, TimeUnit.MINUTES);
+    public Result indexByCode(User user) {
         System.out.println("注册");
-        log.info(seccode);
+        String phone = user.getPhone();
         if (ObjectUtils.isNotEmpty(userDao.selectByphone(phone))) {
             //用户已经存在
             throw new MeioException(ResultEnum.PHONE_IS_EXIST_ERROR);
         }
-        return ResultEnum.SUCCESS;
+        Send send = new Send();
+        String seccode = Random.getRandom();
+        CommonResponse response = send.SendSms(phone,seccode);
+        redis.opsForValue().set(phone, seccode, 5, TimeUnit.MINUTES);
+        String result= response.getData();
+        SendSms sendSms= JSON.parseObject(result, SendSms.class);
+        String code = sendSms.getCode();
+        Integer scode = 0;
+        Boolean bool = true;
+        String message = sendSms.getMessage();
+        if(!code.equals("OK")){
+            scode = 1;
+            bool = false;
+        }
+        Result result1 = new Result();
+        result1.setCode(scode);
+        result1.setMessage(message);
+        result1.setSuccess(bool);
+        return result1;
+
     }
 
     /**

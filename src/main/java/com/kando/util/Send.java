@@ -10,7 +10,7 @@ import com.aliyuncs.http.MethodType;
 import com.aliyuncs.profile.DefaultProfile;
 /*发送短信模板*/
 public class Send {
-    public Boolean SendSms(String phone) {
+    public CommonResponse SendSms(String phone,String seccode) {
         Boolean bool = false;
         DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", "LTAI4FrSHjXVDhBqGHroXmzw", "q4UGSwP5ViyjM5QHdLLvBWCth0wRkW");
         IAcsClient client = new DefaultAcsClient(profile);
@@ -23,16 +23,16 @@ public class Send {
         request.putQueryParameter("PhoneNumbers", phone);
         request.putQueryParameter("SignName", "MEIO");
         request.putQueryParameter("TemplateCode", "SMS_176524110");
-        request.putQueryParameter("TemplateParam", "{\"code\":\"4567\"}                           ");
+        request.putQueryParameter("TemplateParam", "{\"code\":\""+seccode+"\"}");
         try {
             CommonResponse response = client.getCommonResponse(request);
             System.out.println(response.getData());
-            bool = true;
+            return response;
         } catch (ServerException e) {
             e.printStackTrace();
         } catch (ClientException e) {
             e.printStackTrace();
         }
-        return bool;
+        return null;
     }
 }

@@ -2,8 +2,10 @@ package com.kando.service;
 
 
 
+import com.aliyuncs.CommonResponse;
 import com.github.pagehelper.PageInfo;
 import com.kando.common.exception.ResultEnum;
+import com.kando.dto.Result;
 import com.kando.entity.User;
 import com.kando.vo.PageVo;
 
@@ -23,11 +25,11 @@ public interface UserService {
     //手机密码登陆
     User loginByPwd(User user);
     //手机验证码登陆-发送验证码
-    ResultEnum loginByCode(User user);
+    Result loginByCode(User user);
     //手机验证码登陆-验证手机验证码
     User loginCheckCode(User user);
     //注册-发送手机验证码
-    ResultEnum indexByCode(User user);
+    Result indexByCode(User user);
     //注册-验证手机验证码
     ResultEnum indexCheckCode(User user) ;
     //注册-绑定邮箱-发送邮箱验证码

@@ -1,11 +1,9 @@
 package com.kando.controller;
 
 
-import com.kando.ao.UserAo;
 import com.kando.common.exception.ResultEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +17,6 @@ import com.kando.entity.User;
 import com.kando.service.UserService;
 import com.kando.vo.PageVo;
 
-import java.util.UUID;
 
 /**
  * @author 孙雨佳
@@ -71,12 +68,7 @@ public class UserController {
     public Result loginByCode(@Validated User user) {
         log.info("is doing loginByCode.....");
         try {
-            ResultEnum resultEnum = userService.loginByCode(user);
-            Result result = new Result();
-            result.setCode(resultEnum.getCode());
-            result.setMessage(resultEnum.getMessage());
-            result.setSuccess(true);
-            log.info("login successful.....");
+            Result result = userService.loginByCode(user);
             return result;
         } catch (Exception e) {
             Result result = new Result();
@@ -85,6 +77,7 @@ public class UserController {
             return result;
         }
     }
+
 
     /**
      * @return Result    返回类型
@@ -123,11 +116,7 @@ public class UserController {
         try {
             User user = new User();
             user.setPhone(phone);
-            ResultEnum resultEnum = userService.indexByCode(user);
-            Result result = new Result();
-            result.setCode(resultEnum.getCode());
-            result.setMessage(resultEnum.getMessage());
-            result.setSuccess(true);
+            Result result = userService.indexByCode(user);
             return result;
         } catch (Exception e) {
             Result result = new Result();
