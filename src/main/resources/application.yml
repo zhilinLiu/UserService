@@ -62,3 +62,4 @@ ftp:
   host: 192.168.50.171
   port: 21
   baseUrl: /home/ftpuser/www/images/
+  agentPath: http://192.168.50.171/
