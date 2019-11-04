@@ -53,10 +53,10 @@ public class MyShiroFilter extends AuthenticatingFilter {
             return myshiroToken;
         }catch (TokenNullException e){
             //没从请求头获取到token
-            return new UsernamePasswordToken("NullToken", "null");
+            return new UsernamePasswordToken("NullToken", "null1");
         }catch (NullPointerException e){
             //请求头获取的token从redis没拿到
-            return new UsernamePasswordToken("NullPointer", "null");
+            return new UsernamePasswordToken("NullPointer", "null1");
         }
     }
 
@@ -79,9 +79,7 @@ public class MyShiroFilter extends AuthenticatingFilter {
         httpResponse.setContentType("application/json;charset=utf-8");
         httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
         String message = e.getMessage();
-        String nullToken ="Submitted credentials for token [org.apache.shiro.authc.UsernamePasswordToken - NullToken, rememberMe=false] did not match the expected credentials.";
-        String NullPointer ="Submitted credentials for token [org.apache.shiro.authc.UsernamePasswordToken - NullPointer, rememberMe=false] did not match the expected credentials.";
-        if(message.equals(nullToken)){
+        if(message.contains("NullToken")){
             Result<String> result = new Result<>();
             result.setCode(401);
             result.setMessage("没有登录禁止访问");
@@ -91,7 +89,7 @@ public class MyShiroFilter extends AuthenticatingFilter {
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-        }else if(message.equals(NullPointer)){
+        }else if(message.contains("NullPointer")){
             Result<String> result = new Result<>();
             result.setCode(402);
             result.setMessage("token过期，请重新登录");
