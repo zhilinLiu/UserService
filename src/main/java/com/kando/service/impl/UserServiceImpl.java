@@ -390,7 +390,7 @@ public class UserServiceImpl implements UserService {
     }
     public String generateToken(User user){
         String  uuid = UUID.randomUUID().toString();
-        String UsernamePassword = user.getPhone()+","+user.getPassword();
+        String UsernamePassword = user.getPhone()+","+user.getPassword()+","+user.getId();
         //存入redis
         redis.opsForValue().set("token:"+uuid,UsernamePassword,10,TimeUnit.MINUTES);
         return uuid;
