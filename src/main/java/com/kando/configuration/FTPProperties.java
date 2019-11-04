@@ -38,4 +38,6 @@ public class FTPProperties {
     private boolean renameUploaded;
 
     private int retryTime;
+
+    private String agentPath;
 }
