@@ -46,8 +46,17 @@ public class ShiroConfiguration {
         Map<String, String> filterMap = new LinkedHashMap<>();
         filterMap.put("/", "anon");
         filterMap.put("/role/roleAll", "anon");
+        filterMap.put("/user/image","anon");
+        filterMap.put("/user/loginByPwd","anon");
+        filterMap.put("/user/loginCheckCode","anon");
+        filterMap.put("/user/indexByCode","anon");
+        filterMap.put("/user/indexCheckCode","anon");
+        filterMap.put("/user/indexBindEmail","anon");
+        filterMap.put("/user/IndexEmailCode","anon");
         filterMap.put("/role/*","token");
         filterMap.put("/auth/*","token");
+        filterMap.put("/user/*","token");
+        filterMap.put("/org/*","token");
         shiroFilter.setFilterChainDefinitionMap(filterMap);
 
         return shiroFilter;

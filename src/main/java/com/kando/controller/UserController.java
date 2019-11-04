@@ -2,7 +2,6 @@ package com.kando.controller;
 
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
-import com.kando.common.exception.MeioException;
 import com.kando.common.exception.ResultEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -23,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 
@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @RestController
+@RequestMapping("user")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -48,16 +49,16 @@ public class UserController {
     private String authCodeKey ;
     //生成验证码
     @RequestMapping(value = "/image", method = RequestMethod.GET)//隐藏接口
-    public void defaultKaptcha(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,String phone) throws Exception {
+    public void defaultKaptcha(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,String uuid) throws Exception {
         byte[] captchaChallengeAsJpeg = null;
         ByteArrayOutputStream jpegOutputStream = new ByteArrayOutputStream();
         try {
             //生产验证码字符串并保存到redis中
             String createText = defaultKaptcha.createText();
             log.info("image code is:"+createText);
-            authCodeKey = phone;
+            authCodeKey = uuid;
             redisTemplate.opsForValue().set(authCodeKey,createText, 5, TimeUnit.MINUTES);
-            //String ss = redisTemplate.opsForValue().get(authCodeKey).toString();
+            String ss = redisTemplate.opsForValue().get(authCodeKey).toString();
             //使用生产的验证码字符串返回一个BufferedImage对象并转为byte写入到byte数组中
             BufferedImage challenge = defaultKaptcha.createImage(createText);
             ImageIO.write(challenge, "jpg", jpegOutputStream);
@@ -115,7 +116,7 @@ public class UserController {
     public Result loginByCode(@Validated User user,HttpServletResponse httpServletResponse) {
         log.info("is doing loginByCode.....");
         try {
-            authCodeKey =  user.getPhone();
+            authCodeKey =  user.getUuid();
             String code = redisTemplate.opsForValue().get(authCodeKey).toString();
             if (!code.equalsIgnoreCase(user.getScode())){
                 Result result = new Result();
@@ -215,7 +216,7 @@ public class UserController {
     @RequestMapping(value = "/indexBindEmail", method = RequestMethod.GET)
     public Result indexBindEmail(User user) {
         try {
-            authCodeKey =  user.getEmail();
+            authCodeKey =  user.getUuid();
             String code = redisTemplate.opsForValue().get(authCodeKey).toString();
             if (!code.equalsIgnoreCase(user.getScode())){
                 Result result = new Result();

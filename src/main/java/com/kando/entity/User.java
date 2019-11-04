@@ -36,9 +36,12 @@ public class User implements Serializable {
 
     private List<Role> roles;//角色
 
-    private String seccode;//验证码
+    private String seccode;//手机验证码
 
     private ArrayList<Integer> roleId;//角色id
 
     private String scode;//图片验证码
+
+    private String uuid;//绑定图片验证的唯一标识
+
 }

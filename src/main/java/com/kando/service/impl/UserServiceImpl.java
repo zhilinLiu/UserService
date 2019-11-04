@@ -35,6 +35,8 @@ import com.kando.entity.User;
 import com.kando.vo.PageVo;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.MessagingException;
+
 
 /**
  * @author 孙雨佳
@@ -251,7 +253,8 @@ public class UserServiceImpl implements UserService {
         }
         String seccode = Random.getRandom();
         redis.opsForValue().set(email, seccode, 5, TimeUnit.MINUTES);
-        log.info(seccode);
+        EmailUtil emailUtil = new EmailUtil();
+        emailUtil.sendMail(email,seccode);
         log.info("发送邮箱验证码");
         return ResultEnum.SUCCESS;
     }

@@ -43,8 +43,8 @@ public class MyShiroFilter extends AuthenticatingFilter {
 //            从request里得到tokenId
             String tokenId = getRequestToken(httpServletRequest);
             String UseramePassword = (String) stringRedisTemplate.opsForValue().get("token:"+tokenId);
-            stringRedisTemplate.expire("token:"+tokenId,10, TimeUnit.MINUTES);
-            Long expire = stringRedisTemplate.getExpire("token:" + tokenId,TimeUnit.MINUTES);
+            stringRedisTemplate.expire("token:"+tokenId,600, TimeUnit.SECONDS);
+            Long expire = stringRedisTemplate.getExpire("token:" + tokenId,TimeUnit.SECONDS);
             log.info("接受到的token超时时间为:"+expire);
             String[] split = UseramePassword.split(",");
             String userName = split[0];
