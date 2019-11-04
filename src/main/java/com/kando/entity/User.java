@@ -40,4 +40,5 @@ public class User implements Serializable {
 
     private ArrayList<Integer> roleId;//角色id
 
+    private String scode;//图片验证码
 }

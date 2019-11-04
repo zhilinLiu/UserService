@@ -32,7 +32,7 @@ public class UserServiceImplTest {
 
     @Test
     public void test2() throws IOException {
-        boolean flag = FTPUtils.uploadFile("666.jpg", "D:\\666.jpg");
+        boolean flag = FTPUtils.uploadFile("999.jpg", "D:\\666.jpg");
         Assert.assertEquals(true, flag);
 
     }
