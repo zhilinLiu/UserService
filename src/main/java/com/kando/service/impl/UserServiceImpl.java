@@ -396,7 +396,7 @@ public class UserServiceImpl implements UserService {
         return uuid;
     }
 
-    public boolean logout(String token){
+    public boolean logOut(String token){
         if(token==null||token.equals("")){
             return false;
         }

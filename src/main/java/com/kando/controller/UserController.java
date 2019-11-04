@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 
@@ -43,9 +42,7 @@ public class UserController {
     private DefaultKaptcha defaultKaptcha;
     @Autowired
     private StringRedisTemplate redisTemplate;
-
-    private Long AUTH_CODE_EXPIRE_SECONDS;
-
+    //图片验证码唯一标识uuid
     private String authCodeKey ;
     //生成验证码
     @RequestMapping(value = "/image", method = RequestMethod.GET)//隐藏接口
@@ -58,7 +55,6 @@ public class UserController {
             log.info("image code is:"+createText);
             authCodeKey = uuid;
             redisTemplate.opsForValue().set(authCodeKey,createText, 5, TimeUnit.MINUTES);
-            String ss = redisTemplate.opsForValue().get(authCodeKey).toString();
             //使用生产的验证码字符串返回一个BufferedImage对象并转为byte写入到byte数组中
             BufferedImage challenge = defaultKaptcha.createImage(createText);
             ImageIO.write(challenge, "jpg", jpegOutputStream);
@@ -370,12 +366,12 @@ public class UserController {
             return result;
         }
     }
-    @RequestMapping("/logout")
-    public Result logout(HttpServletRequest request){
+    @RequestMapping("/logOut")
+    public Result logOut(HttpServletRequest request){
         log.info("is doing logout.......");
         String token = request.getHeader("token");
         Result<Object> result = new Result<>();
-        if(userService.logout(token)){
+        if(userService.logOut(token)){
             result.setCode(0);
             result.setSuccess(true);
             result.setMessage("登出成功");

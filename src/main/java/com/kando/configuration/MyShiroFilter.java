@@ -92,7 +92,7 @@ public class MyShiroFilter extends AuthenticatingFilter {
         }else if(message.contains("NullPointer")){
             Result<String> result = new Result<>();
             result.setCode(402);
-            result.setMessage("token过期，请重新登录");
+            result.setMessage("token过期或者已经登出,请重新登录");
             result.setSuccess(false);
             try {
                 httpResponse.getWriter().print(JSON.toJSONString(result));

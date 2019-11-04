@@ -45,6 +45,6 @@ public interface UserService {
     //修改成功
     ResultEnum updateUser1(User user);
     //登出
-    public boolean logout(String token);
+    public boolean logOut(String token);
 
 }

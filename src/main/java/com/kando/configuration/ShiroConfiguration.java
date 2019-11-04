@@ -53,6 +53,7 @@ public class ShiroConfiguration {
         filterMap.put("/user/indexCheckCode","anon");
         filterMap.put("/user/indexBindEmail","anon");
         filterMap.put("/user/IndexEmailCode","anon");
+        filterMap.put("/user/logOut","anon");
         filterMap.put("/role/*","token");
         filterMap.put("/auth/*","token");
         filterMap.put("/user/*","token");
