@@ -395,4 +395,12 @@ public class UserServiceImpl implements UserService {
         redis.opsForValue().set("token:"+uuid,UsernamePassword,10,TimeUnit.MINUTES);
         return uuid;
     }
+
+    public boolean logout(String token){
+        if(token==null||token.equals("")){
+            return false;
+        }
+        Boolean flag = redis.delete("token:" + token);
+        return flag;
+    }
 }

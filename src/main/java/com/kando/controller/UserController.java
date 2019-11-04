@@ -370,5 +370,21 @@ public class UserController {
             return result;
         }
     }
+    @RequestMapping("/logout")
+    public Result logout(HttpServletRequest request){
+        log.info("is doing logout.......");
+        String token = request.getHeader("token");
+        Result<Object> result = new Result<>();
+        if(userService.logout(token)){
+            result.setCode(0);
+            result.setSuccess(true);
+            result.setMessage("登出成功");
+        }else {
+            result.setCode(1);
+            result.setSuccess(false);
+            result.setMessage("登出失败，可能已经登出");
+        }
+        return result;
+    }
 
 }
