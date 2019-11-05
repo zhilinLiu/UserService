@@ -49,6 +49,7 @@ public class ShiroConfiguration {
         filterMap.put("/user/image","anon");
         filterMap.put("/user/loginByPwd","anon");
         filterMap.put("/user/loginCheckCode","anon");
+        filterMap.put("/user/loginByCode","anon");
         filterMap.put("/user/indexByCode","anon");
         filterMap.put("/user/indexCheckCode","anon");
         filterMap.put("/user/indexBindEmail","anon");

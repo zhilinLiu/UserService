@@ -46,7 +46,7 @@ public class MyShiroFilter extends AuthenticatingFilter {
             stringRedisTemplate.expire("token:"+tokenId,600, TimeUnit.SECONDS);
             Long expire = stringRedisTemplate.getExpire("token:" + tokenId,TimeUnit.SECONDS);
             log.info("接受到的token超时时间为:"+expire);
-            String[] split = UseramePassword.split("|");
+            String[] split = UseramePassword.split("\\|");
             String userName = split[0];
             String passWord = split[1];
             UsernamePasswordToken myshiroToken = new UsernamePasswordToken(userName, passWord);
