@@ -22,7 +22,7 @@ public interface  UserDao {
 	
 	 User selectByid(@Param("id") Integer id);
 
-	 List<User> selectAll(@Param("Key") String key);
+	 List<User> selectAll(@Param("key") String key);
 	
 	
 }

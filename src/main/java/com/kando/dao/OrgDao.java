@@ -12,7 +12,7 @@ public interface OrgDao {
 
 	public Organization selectByid(@Param("id") Integer id);
 		
-	public List<Organization> selectAll(@Param("Key") String key);
+	public List<Organization> selectAll(@Param("key") String key);
 
 	public Integer deleteByid(@Param("id") Integer id);
 	

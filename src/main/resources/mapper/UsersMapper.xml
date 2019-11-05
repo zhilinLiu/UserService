@@ -55,7 +55,7 @@
         <include refid="Base_Column_List" />
         from sys_user
         <where>
-        <if test="key!=null and key!='' ">
+        <if test="key!=null and key!=''">
            and  (user_name like CONCAT('%',#{key,jdbcType=VARCHAR},'%')  
              or phone like CONCAT('%',#{key,jdbcType=VARCHAR},'%')
            )
