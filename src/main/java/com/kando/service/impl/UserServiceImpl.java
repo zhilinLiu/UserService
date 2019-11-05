@@ -389,10 +389,20 @@ public class UserServiceImpl implements UserService {
         return ResultEnum.SUCCESS;
     }
     public String generateToken(User user){
+
         String  uuid = UUID.randomUUID().toString();
-        String UsernamePassword = user.getPhone()+","+user.getPassword()+","+user.getId();
+        List<Role> roles = user.getRoles();
+        ArrayList<Integer> authId = new ArrayList<>();
+        roles.forEach(role -> {
+            role.getAuthority().forEach(authority -> {
+                authId.add(authority.getId());
+            });
+        });
+        String listJSON = JSON.toJSONString(authId);
+        String userToken = user.getPhone()+"|"+user.getPassword()+"|"+user.getId()+"|"+listJSON;
+
         //存入redis
-        redis.opsForValue().set("token:"+uuid,UsernamePassword,10,TimeUnit.MINUTES);
+        redis.opsForValue().set("token:"+uuid,userToken,10,TimeUnit.MINUTES);
         return uuid;
     }
 
