@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kando.dao.AuthorityDao">
-
+    <cache eviction="LRU" type="com.kando.configuration.RedisCache" />
     <select id="selectAll" resultMap="AuthorityMap">
 		select * from sys_authority
 	</select>
@@ -14,13 +14,13 @@
         select * from sys_authority where name like #{field}
     </select>
 
-    <insert id="insertAuth" parameterType="com.kando.entity.Authority">
+    <insert id="insertAuth" parameterType="com.kando.entity.Authority" flushCache="true">
         insert into sys_authority(name,description,menu_id,fun_id) values(#{name},#{description},#{menuId},#{funId})
     </insert>
-    <delete id="deleteAuth" parameterType="java.lang.Integer">
+    <delete id="deleteAuth" parameterType="java.lang.Integer" flushCache="true">
         delete from sys_authority where id=#{id}
     </delete>
-    <update id="updateAuth" parameterType="com.kando.entity.Authority">
+    <update id="updateAuth" parameterType="com.kando.entity.Authority" flushCache="true">
         update sys_authority SET name=#{name},description=#{description},menu_id=#{menuId},fun_id=#{funId} where id=#{id}
     </update>
 

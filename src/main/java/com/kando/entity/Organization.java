@@ -2,6 +2,7 @@ package com.kando.entity;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**  
@@ -12,7 +13,7 @@ import java.util.Date;
 *    
 */
 @Data
-public class Organization {
+public class Organization implements Serializable {
 
 	private Integer id;//单位ID
 

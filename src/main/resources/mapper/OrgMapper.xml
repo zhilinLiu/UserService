@@ -8,7 +8,7 @@
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
         <result column="status" property="status" jdbcType="INTEGER" />
     </resultMap>
-    
+    <cache eviction="LRU" type="com.kando.configuration.RedisCache" />
   	<sql id="Org_Column_List">
         id, name, org_id, status, create_time
     </sql>
@@ -33,7 +33,7 @@
         </where>
     </select>
     
-    <update id="update" parameterType="com.kando.entity.Organization">
+    <update id="update" parameterType="com.kando.entity.Organization" flushCache="true">
 	update sys_org
 	<set >
       <if test="id != null" >
@@ -55,11 +55,11 @@
 	where id = #{id,jdbcType=INTEGER}
 	</update>
     
-    <delete id="deleteByid" parameterType="com.kando.entity.Organization">  
+    <delete id="deleteByid" parameterType="com.kando.entity.Organization" flushCache="true">
         delete from sys_org where id = #{id,jdbcType=INTEGER}
 	</delete> 
 	
-	<insert id="insertOrg" parameterType="com.kando.entity.Organization">
+	<insert id="insertOrg" parameterType="com.kando.entity.Organization" flushCache="true">
 	insert into sys_org(id,name,org_id,create_time,status)
 	values(#{id,jdbcType=INTEGER},#{name,jdbcType=VARCHAR},#{orgId,jdbcType=VARCHAR},
 	#{createTime,jdbcType=TIMESTAMP},#{status,jdbcType=INTEGER})

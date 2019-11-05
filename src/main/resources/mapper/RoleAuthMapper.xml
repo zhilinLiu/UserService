@@ -8,20 +8,20 @@
         <result property="roleId" column="role_id"/>
         <result property="authId" column="auth_id"/>
     </resultMap>
-
+    <cache eviction="LRU" type="com.kando.configuration.RedisCache" />
     <select id="selectAuth" resultMap="RoleAuthMap">
         select * from sys_role_authority where role_id=#{id}
     </select>
-    <insert id="insertRoleAuth" >
+    <insert id="insertRoleAuth" flushCache="true">
         insert into sys_role_authority(role_id,auth_id) values(#{roleId},#{authId})
     </insert>
-    <delete id="deleteRoleAuth">
+    <delete id="deleteRoleAuth" flushCache="true">
         delete from sys_role_authority where role_id=#{roleId} and auth_id=#{authId}
     </delete>
-    <delete id="deleteAllAuth">
+    <delete id="deleteAllAuth" flushCache="true">
         delete from sys_role_authority where role_id=#{roleId}
     </delete>
-    <update id="updateRoleAuth">
+    <update id="updateRoleAuth" flushCache="true">
         update sys_role_authority set auth_id=#{newAuthId} where role_id=#{roleId} and auth_id=#{authId}
     </update>
 

@@ -3,6 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kando.dao.RoleDao">
+    <cache eviction="LRU" type="com.kando.configuration.RedisCache" />
 
     <resultMap type="com.kando.entity.Role" id="RoleMap">
         <id column="id" property="id"/>
@@ -27,13 +28,13 @@
     </select>
 
 
-    <insert id="inserRole" keyProperty="id" useGeneratedKeys="true" parameterType="com.kando.entity.Role">
+    <insert id="inserRole" keyProperty="id" useGeneratedKeys="true" parameterType="com.kando.entity.Role" flushCache="true">
         INSERT INTO sys_role(name,description,create_time,create_user_id,status) values(#{name},#{description},current_timestamp(),#{createUserId},#{status})
     </insert>
-    <delete id="deleteRole" parameterType="java.lang.Integer">
+    <delete id="deleteRole" parameterType="java.lang.Integer" flushCache="true">
         delete  from sys_role where id=#{id}
     </delete>
-    <update id="updateRole" parameterType="com.kando.entity.Role">
+    <update id="updateRole" parameterType="com.kando.entity.Role" flushCache="true">
         update sys_role set name=#{name},description=#{description},status=#{status} where id=#{id}
     </update>
 

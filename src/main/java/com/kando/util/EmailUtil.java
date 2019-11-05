@@ -34,7 +34,7 @@ public class EmailUtil {
         //通过密码认证信息
         protected PasswordAuthentication getPasswordAuthentication() {
         //这个用户名密码就可以登录到邮箱服务器了,用它给别人发送邮件
-        return new PasswordAuthentication("1058808876@qq.com", "ystxhjwzykvibebg");
+        return new PasswordAuthentication("1058808876@qq.com", "hwmcryrpwawrbfie");
             }
         });
             Message message = new MimeMessage(session);
