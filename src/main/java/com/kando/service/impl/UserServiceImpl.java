@@ -1,6 +1,5 @@
 package com.kando.service.impl;
 
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.alibaba.fastjson.JSON;
 import com.aliyuncs.CommonResponse;
+import com.kando.common.utils.MeioKey;
 import com.kando.entity.Role;
 import com.kando.entity.SendSms;
 import com.kando.service.UserService;
@@ -69,16 +69,18 @@ public class UserServiceImpl implements UserService {
         String phone = user.getPhone();
         if (StringUtils.isBlank(password) || StringUtils.isBlank(phone)) {
             //手机号或密码不能为空
-            throw new MeioException(ResultEnum.PHONE_STOCK_ERROR);
+            throw new MeioException(ResultEnum.PHONE_PWD_NULL_ERROR.getMessage());
         }
-//        User user1 = userDao.login(phone, password);
+        //加密
         String codePassword = MDCode.EncoderByMd5(password);
+        //验证
         UsernamePasswordToken token = new UsernamePasswordToken(phone, codePassword);
         Subject subject = SecurityUtils.getSubject();
         try {
             subject.login(token);
         } catch (Exception e) {
-            throw new UserNotExsistException("用户不存在或密码错误");
+            //手机或密码不正确
+            throw new MeioException(ResultEnum.PHONE_PWD_ERROR.getMessage());
         }
         User user1 = userDao.selectByphone(phone);
         List<Role> roles = userRoleService.selectRoleId(user1.getId());
@@ -94,23 +96,27 @@ public class UserServiceImpl implements UserService {
     @Override
     public Result loginByCode(User user) {
         String phone = user.getPhone();
+        if(redis.hasKey(phone+MeioKey.KEY)){
+            throw new MeioException(ResultEnum.CODE_SENT_FREQUENTLY.getMessage());
+        }
         if (ObjectUtils.isEmpty(userDao.selectByphone(phone))) {
             //用户不存在
-            throw new MeioException(ResultEnum.USER_NOT_EXIST_ERROR);
+            throw new MeioException(ResultEnum.USER_NOT_EXIST_ERROR.getMessage());
         }
         Send send = new Send();
         String seccode = Random.getRandom();
-        CommonResponse response = send.SendSms(phone,seccode);
-        redis.opsForValue().set(phone, seccode, 5, TimeUnit.MINUTES);
-        String result= response.getData();
-        SendSms sendSms= JSON.parseObject(result, SendSms.class);
+        CommonResponse response = send.SendSms(phone, seccode);
+        redis.opsForValue().set(phone, seccode, 3, TimeUnit.MINUTES);
+        redis.opsForValue().set(phone+MeioKey.KEY, null, 1, TimeUnit.MINUTES);
+        String result = response.getData();
+        SendSms sendSms = JSON.parseObject(result, SendSms.class);
         String code = sendSms.getCode();
         Integer scode = 0;
         Boolean bool = true;
         String message = sendSms.getMessage();
-        if(!code.equals("OK")){
-        scode = 1;
-        bool = false;
+        if (!code.equals("OK")) {
+            scode = 1;
+            bool = false;
         }
         Result result1 = new Result();
         result1.setCode(scode);
@@ -132,14 +138,65 @@ public class UserServiceImpl implements UserService {
         System.out.println("验证手机验证码");
         if (StringUtils.isBlank(seccode1)) {
             //验证码超时
-            throw new MeioException(ResultEnum.Code_long_ERROR);
+            throw new MeioException(ResultEnum.Code_LONG_ERROR.getMessage());
         }
         if (!seccode.equals(seccode1)) {
             //手机或验证码不正确
-            throw new MeioException(ResultEnum.PHONE_STOCK_ERROR);
+            throw new MeioException(ResultEnum.PHONE_CODE_ERROR.getMessage());
         }
         //得到user
         User user1 = userDao.selectByphone(phone);
+        //得到user的角色
+        List<Role> roles = userRoleService.selectRoleId(user1.getId());
+        user1.setRoles(roles);
+        return user1;
+
+    }
+
+    /**
+     * @return ResultEnum
+     * @Title: loginByEmail
+     * @Description: 登陆操作-邮箱验证码登陆-发送验证码
+     */
+    @Override
+    public Result loginByEmail(User user) {
+        String email = user.getEmail();
+        if (ObjectUtils.isEmpty(userDao.selectByemail(email))) {
+            //邮箱不存在
+            throw new MeioException(ResultEnum.EMAIL_IS_NOT_EXIST.getMessage());
+        }
+        String seccode = Random.getRandom();
+        redis.opsForValue().set(email, seccode, 5, TimeUnit.MINUTES);
+        EmailUtil emailUtil = new EmailUtil();
+        emailUtil.sendMail(email, seccode);
+        Result result = new Result();
+        result.setCode(0);
+        result.setMessage("发送成功");
+        result.setSuccess(true);
+        return result;
+    }
+
+    /**
+     * @return User
+     * @Title: loginCheckEmailCode
+     * @Description: 登陆操作-邮箱验证码登陆-验证验证码
+     */
+    @Override
+    public User loginCheckEmail(User user) {
+        String email = user.getEmail();
+        String seccode1 = redis.opsForValue().get(email);
+        String seccode = user.getSeccode();
+        System.out.println("验证邮箱验证码");
+        if (StringUtils.isBlank(seccode1)) {
+            //验证码超时
+            throw new MeioException(ResultEnum.Code_LONG_ERROR.getMessage());
+        }
+        if (!seccode.equals(seccode1)) {
+            //邮箱或验证码不正确
+            throw new MeioException(ResultEnum.EMAIL_STOCK_ERROR.getMessage());
+        }
+        //得到user
+        User user1 = userDao.selectByemail(email);
         //得到user的角色
         List<Role> roles = userRoleService.selectRoleId(user1.getId());
         user1.setRoles(roles);
@@ -162,15 +219,15 @@ public class UserServiceImpl implements UserService {
         }
         Send send = new Send();
         String seccode = Random.getRandom();
-        CommonResponse response = send.SendSms(phone,seccode);
+        CommonResponse response = send.SendSms(phone, seccode);
         redis.opsForValue().set(phone, seccode, 5, TimeUnit.MINUTES);
-        String result= response.getData();
-        SendSms sendSms= JSON.parseObject(result, SendSms.class);
+        String result = response.getData();
+        SendSms sendSms = JSON.parseObject(result, SendSms.class);
         String code = sendSms.getCode();
         Integer scode = 0;
         Boolean bool = true;
         String message = sendSms.getMessage();
-        if(!code.equals("OK")){
+        if (!code.equals("OK")) {
             scode = 1;
             bool = false;
         }
@@ -200,11 +257,11 @@ public class UserServiceImpl implements UserService {
         log.info("验证手机验证码");
         if (StringUtils.isBlank(seccode1)) {
             //验证码超时
-            throw new MeioException(ResultEnum.Code_long_ERROR);
+            throw new MeioException(ResultEnum.Code_LONG_ERROR.getMessage());
         }
         if (!seccode.equals(seccode1)) {
             //手机或验证码不正确
-            throw new MeioException(ResultEnum.PHONE_STOCK_ERROR);
+            throw new MeioException(ResultEnum.PHONE_CODE_ERROR.getMessage());
         }
         User user1 = new User();
         user1.setPhone(phone);
@@ -221,11 +278,10 @@ public class UserServiceImpl implements UserService {
 //					}else if(role.equals("3")){
 //						authorityService.addSpecialist(phone);
 //		}
-        Integer a = userDao.index(user1);
-        if (a <= 0) {
-            throw new MeioException(ResultEnum.UNKNOWN_ERROR);
+        if (!userDao.index(user1)) {
+            throw new MeioException(ResultEnum.UNKNOWN_ERROR.getMessage());
         }
-        Integer userId =userDao.selectByphone(phone).getId();
+        Integer userId = userDao.selectByphone(phone).getId();
         ArrayList<Integer> roleIdList = user.getRoleId();
         roleIdList.forEach(roleId -> {
             //插入新的用户角色
@@ -245,16 +301,16 @@ public class UserServiceImpl implements UserService {
         String email = user.getEmail();
         if (StringUtils.isBlank(email)) {
             //邮箱不能为空
-            throw new MeioException(ResultEnum.PARAM_ERROR);
+            throw new MeioException(ResultEnum.PARAM_ERROR.getMessage());
         }
         if (ObjectUtils.isNotEmpty(userDao.selectByemail(email))) {
             //邮箱已经被绑定
-            throw new MeioException(ResultEnum.EMAIL_IS_EXIST_ERROR);
+            throw new MeioException(ResultEnum.EMAIL_IS_EXIST_ERROR.getMessage());
         }
         String seccode = Random.getRandom();
         redis.opsForValue().set(email, seccode, 5, TimeUnit.MINUTES);
         EmailUtil emailUtil = new EmailUtil();
-        emailUtil.sendMail(email,seccode);
+        emailUtil.sendMail(email, seccode);
         log.info("发送邮箱验证码");
         return ResultEnum.SUCCESS;
     }
@@ -272,22 +328,21 @@ public class UserServiceImpl implements UserService {
         String seccode = user.getSeccode();
         if (StringUtils.isBlank(phone) || StringUtils.isBlank(email)) {
             //手机或邮箱不能为空
-            throw new MeioException(ResultEnum.PARAM_ERROR);
+            throw new MeioException(ResultEnum.PARAM_ERROR.getMessage());
         }
         if (StringUtils.isBlank(seccode1)) {
             //验证码超时
-            throw new MeioException(ResultEnum.Code_long_ERROR);
+            throw new MeioException(ResultEnum.Code_LONG_ERROR.getMessage());
         }
         if (!seccode.equals(seccode1)) {
             //邮箱或验证码不正确
-            throw new MeioException(ResultEnum.EMAIL_STOCK_ERROR);
+            throw new MeioException(ResultEnum.EMAIL_STOCK_ERROR.getMessage());
         }
         User user1 = new User();
         user1.setPhone(phone);
         user1.setEmail(email);
-        Integer a = userDao.updateEmail(user1);
-        if (a <= 0) {
-            throw new MeioException(ResultEnum.EMAIL_ERROR);
+        if (!userDao.updateEmail(user1)) {
+            throw new MeioException(ResultEnum.EMAIL_ERROR.getMessage());
         }
         return ResultEnum.SUCCESS;
     }
@@ -302,12 +357,11 @@ public class UserServiceImpl implements UserService {
         Integer id = user.getId();
         if (ObjectUtils.isEmpty(id)) {
             //id不能为空
-            throw new MeioException(ResultEnum.PARAM_ERROR);
+            throw new MeioException(ResultEnum.PARAM_ERROR.getMessage());
         }
-        Integer a = userDao.deleteByid(id);
-        if (a <= 0) {
+        if (!userDao.deleteByid(id)) {
             //删除用户失败
-            throw new MeioException(ResultEnum.DELETE_USER_ERROR);
+            throw new MeioException(ResultEnum.DELETE_USER_ERROR.getMessage());
         }
         return ResultEnum.SUCCESS;
     }
@@ -328,7 +382,7 @@ public class UserServiceImpl implements UserService {
         user1.forEach(user -> {
             List<Role> roles = userRoleService.selectRoleId(user.getId());
             if (roles == null) {
-                throw new MeioException(ResultEnum.PARAM_ERROR);
+                throw new MeioException(ResultEnum.PARAM_ERROR.getMessage());
             }
             user.setRoles(roles);
         });
@@ -345,17 +399,18 @@ public class UserServiceImpl implements UserService {
     public User updateUser(Integer id) {
         if (ObjectUtils.isEmpty(id)) {
             //id不能为空
-            throw new MeioException(ResultEnum.PARAM_ERROR);
+            throw new MeioException(ResultEnum.PARAM_ERROR.getMessage());
         }
         User user1 = userDao.selectByid(id);
         if (ObjectUtils.isEmpty(user1)) {
             //用户不存在
-            throw new MeioException(ResultEnum.USER_NOT_EXIST_ERROR);
+            throw new MeioException(ResultEnum.USER_NOT_EXIST_ERROR.getMessage());
         }
         List<Role> roles = userRoleService.selectRoleId(id);
         user1.setRoles(roles);
         return user1;
     }
+
 
     /**
      * @return ResultEnum
@@ -375,8 +430,8 @@ public class UserServiceImpl implements UserService {
         user1.setEmail(user.getEmail());
         user1.setId(userId);
         user1.setRoles(user.getRoles());
-        if(userId==null){
-            throw new MeioException(ResultEnum.PARAM_ERROR);
+        if (userId == null) {
+            throw new MeioException(ResultEnum.PARAM_ERROR.getMessage());
         }
         //根据用户id删除所有角色
         userRoleService.deleteRoleId(userId);
@@ -388,9 +443,34 @@ public class UserServiceImpl implements UserService {
         userDao.update(user1);
         return ResultEnum.SUCCESS;
     }
-    public String generateToken(User user){
 
-        String  uuid = UUID.randomUUID().toString();
+    /**
+     * @return ResultEnum
+     * @Title: updateUser1
+     * @Description: 用戶管理-修改密码
+     */
+    @Override
+    @Transactional
+    public ResultEnum changePassword(User user) {
+        User user1 = new User();
+        String password = user.getPassword();
+        String phone = user.getPhone();
+        String codePassword = MDCode.EncoderByMd5(password);
+        if(ObjectUtils.isEmpty(userDao.login(phone,codePassword))){
+            throw new MeioException(ResultEnum.OLDPASSWORD_IS_ERROR.getMessage());
+        }
+        String newpassword = user.getNewPassword();
+        String nCodePassword = MDCode.EncoderByMd5(newpassword);
+        user1.setPassword(nCodePassword);
+        user1.setPhone(phone);
+        if(! userDao.updateEmail(user1)){
+           throw new MeioException(ResultEnum.UNKNOWN_ERROR.getMessage());
+        }
+        return ResultEnum.SUCCESS;
+    }
+
+    public String generateToken(User user) {
+        String uuid = UUID.randomUUID().toString();
         List<Role> roles = user.getRoles();
         ArrayList<Integer> authId = new ArrayList<>();
         roles.forEach(role -> {
@@ -399,15 +479,15 @@ public class UserServiceImpl implements UserService {
             });
         });
         String listJSON = JSON.toJSONString(authId);
-        String userToken = user.getPhone()+"|"+user.getPassword()+"|"+user.getId()+"|"+listJSON;
+        String userToken = user.getPhone() + "|" + user.getPassword() + "|" + user.getId() + "|" + listJSON;
 
         //存入redis
-        redis.opsForValue().set("token:"+uuid,userToken,10,TimeUnit.MINUTES);
+        redis.opsForValue().set("token:" + uuid, userToken, 10, TimeUnit.MINUTES);
         return uuid;
     }
 
-    public boolean logOut(String token){
-        if(token==null||token.equals("")){
+    public boolean logOut(String token) {
+        if (token == null || token.equals("")) {
             return false;
         }
         Boolean flag = redis.delete("token:" + token);

@@ -43,13 +43,13 @@ public class EmailUtil {
             //2.2设置收件人 这个TO就是收件人
             message.setRecipient(RecipientType.TO, new InternetAddress(emailUser));
             //2.3邮件的主题
-            message.setSubject("来自密码云网站验证码邮件");
+            message.setSubject("来自MEIO网站验证码邮件");
             //2.4设置邮件的正文 第一个参数是邮件的正文内容 第二个参数是：是文本还是html的连接message.setContent("<h1>来自密码云网站验证码邮件,请接收你的验证码：</h1><h3>你的验证码是：" + vcode + "，请妥善保管好你的验证码！</h3>", "text/html;charset=UTF-8");      
             message.setContent("<h1>来自MEIO的验证码邮件,请接收你的验证码：</h1><h3>你的验证码是："+vcode+"，请妥善保管好你的验证码！</h3>", "text/html;charset=UTF-8");
             //3.发送一封激活邮件
             Transport.send(message);
             } catch (Exception mex) {
-                throw new MeioException(ResultEnum.EMAIL_SEND_FAILED);
+                throw new MeioException(ResultEnum.EMAIL_SEND_FAILED.getMessage());
         }
     }
 }

@@ -28,6 +28,10 @@ public interface UserService {
     Result loginByCode(User user);
     //手机验证码登陆-验证手机验证码
     User loginCheckCode(User user);
+    //邮箱验证码登陆-发送邮箱验证码
+    Result loginByEmail(User user);
+    //邮箱验证码登陆-验证邮箱验证码
+    User loginCheckEmail(User user);
     //注册-发送手机验证码
     Result indexByCode(User user);
     //注册-验证手机验证码
@@ -44,6 +48,8 @@ public interface UserService {
     User updateUser(Integer id);
     //修改成功
     ResultEnum updateUser1(User user);
+    //修改密码
+    ResultEnum changePassword(User user);
     //登出
     public boolean logOut(String token);
 

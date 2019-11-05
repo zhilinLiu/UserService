@@ -44,4 +44,6 @@ public class User implements Serializable {
 
     private String uuid;//绑定图片验证的唯一标识
 
+    private String newPassword;//新密码
+
 }

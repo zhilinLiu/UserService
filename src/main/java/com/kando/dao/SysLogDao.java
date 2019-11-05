@@ -11,5 +11,5 @@ import java.util.List;
  */
 public interface SysLogDao {
     boolean insert(SysLogEntity entity)throws SQLException;
-    List<SysLogEntity> selectAll(@Param("key") String key);
+    List<SysLogEntity> selectAll(@Param("Key") String key);
 }

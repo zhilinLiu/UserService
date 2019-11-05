@@ -5,6 +5,7 @@ import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.kando.common.exception.ResultEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.validation.annotation.Validated;
@@ -78,7 +79,7 @@ public class UserController {
     /**
      * @return Result   返回类型
      * @Title: loginByPwd
-     * @Description: TODO(登陆操作 - 用户名密码)
+     * @Description: TODO(登陆操作 - 手机号密码)
      */
     @RequestMapping(value = "/loginByPwd", method = RequestMethod.GET)
     public Result loginByPwd(User user) {
@@ -105,7 +106,7 @@ public class UserController {
     /**
      * @return Result    返回类型
      * @Title: loginByCode
-     * @Description: TODO(登陆操作 - 发送手机验证码)
+     * @Description: TODO(登陆操作 - 邮箱/手机号 - 发送验证码)
      */
 
     @RequestMapping(value = "/loginByCode", method = RequestMethod.GET)
@@ -119,12 +120,18 @@ public class UserController {
                 result.setMessage("图片验证码错误");
                 return result;
             }
-            Result result = userService.loginByCode(user);
+            Result result = new Result();
+            if(StringUtils.isNotBlank(user.getPhone())){
+                result = userService.loginByCode(user);
+
+            }else {
+                result = userService.loginByEmail(user);
+            }
             return result;
         } catch (Exception e) {
             Result result = new Result();
             result.setCode(1);
-            result.setMessage(e.getMessage());
+            result.setMessage(e.getLocalizedMessage());
             return result;
         }
     }
@@ -139,7 +146,12 @@ public class UserController {
     @RequestMapping(value = "/loginCheckCode", method = RequestMethod.GET)
     public Result checkCode(@Validated User user) {
         try {
-            User user1 = userService.loginCheckCode(user);
+            User user1 = new User();
+            if(user.getPhone()==null){
+                user1 =  userService.loginCheckEmail(user);
+            }else if(user.getEmail()==null){
+                user1 = userService.loginCheckCode(user);
+            }
             Result<User> result = new Result();
             result.setCode(0);
             result.setToken(user1!=null?userService.generateToken(user1):"Notoken");
@@ -341,15 +353,12 @@ public class UserController {
 
     /**
      * @return Result    返回类型
-     * @throws
      * @Title: updateUser1
      * @Description: TODO(修改用户 - 修改成功)
      */
 
     @RequestMapping(value = "/updateUser1", method = RequestMethod.POST)
     public Result updateUser1(@RequestBody User user) {
-//        User user = new User();
-//        BeanUtils.copyProperties(user1,user);
         try {
             log.info("接收到的参数为"+user);
             ResultEnum resultEnum = userService.updateUser1(user);
@@ -366,6 +375,39 @@ public class UserController {
             return result;
         }
     }
+
+    /**
+     * @return Result    返回类型
+     * @Title: changePassword
+     * @Description: TODO(修改用户 - 修改密码)
+     */
+
+    @RequestMapping(value = "/changePassword", method = RequestMethod.POST)
+    public Result changePassword(@RequestBody User user) {
+        try {
+            log.info("接收到的参数为"+user);
+            ResultEnum resultEnum = userService.changePassword(user);
+            Result result = new Result();
+            result.setCode(resultEnum.getCode());
+            result.setMessage(resultEnum.getMessage());
+            result.setSuccess(true);
+            return result;
+        } catch (Exception e) {
+            Result result = new Result();
+            result.setCode(1);
+            result.setMessage(e.getMessage());
+            result.setSuccess(false);
+            return result;
+        }
+    }
+
+    /**
+     * @return Result    返回类型
+     * @throws
+     * @Title: logOut
+     * @Description: TODO(登出)
+     */
+
     @RequestMapping("/logOut")
     public Result logOut(HttpServletRequest request){
         log.info("is doing logout.......");
@@ -382,5 +424,4 @@ public class UserController {
         }
         return result;
     }
-
 }
