@@ -79,6 +79,9 @@ public class UserServiceImpl implements UserService {
         try {
             subject.login(token);
         } catch (Exception e) {
+            if("用户不存在".equals(e.getMessage())){
+                throw  new MeioException("用户不存在");
+            }
             //手机或密码不正确
             throw new MeioException(ResultEnum.PHONE_PWD_ERROR.getMessage());
         }

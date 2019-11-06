@@ -58,7 +58,13 @@ public class MyRealm extends AuthorizingRealm {
         }
         //按照用户名从从数据库查询出密码
         User user = userDao.selectByphone(phone);
-        String password = user.getPassword();
+        String password;
+        try {
+             password = user.getPassword();
+        }catch (Exception e){
+            throw new UserNotExsistException("用户不存在");
+        }
+
         //第二个参数为数据库查询出的密码
         SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(phone,password, getName());
         return simpleAuthenticationInfo;

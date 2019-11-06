@@ -1,9 +1,12 @@
 package com.kando.util;
 
+
+import org.apache.shiro.authc.AuthenticationException;
+
 /**
  *
  */
-public class UserNotExsistException extends RuntimeException {
+public class UserNotExsistException extends AuthenticationException {
     UserNotExsistException(){
 
     }
