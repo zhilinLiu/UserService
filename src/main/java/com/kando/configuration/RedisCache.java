@@ -23,9 +23,11 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class RedisCache implements Cache {
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private String id;
+    private String cacheName;
 
     public RedisCache(String id) {
         this.id = id;
+        this.cacheName = UUID.randomUUID().toString();
     }
 
     @Override
@@ -42,7 +44,7 @@ public class RedisCache implements Cache {
     public void putObject(Object key, Object value) {
         Long mybatisCache = null;
         try {
-            mybatisCache = RedisUtil.getJedis().hset("mybatisCache".getBytes("utf-8"),turnKey(key),SerializeUtil.serialize(value));
+            mybatisCache = RedisUtil.getJedis().hset(("mybatisCache:"+cacheName).getBytes("utf-8"),turnKey(key),SerializeUtil.serialize(value));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -54,7 +56,7 @@ public class RedisCache implements Cache {
         Object result =null;
 
         try {
-            byte[] bytes = RedisUtil.getJedis().hget("mybatisCache".getBytes("utf-8"), turnKey(key));
+            byte[] bytes = RedisUtil.getJedis().hget(("mybatisCache:"+cacheName).getBytes("utf-8"), turnKey(key));
             result = SerializeUtil.deserialize(bytes);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -67,7 +69,7 @@ public class RedisCache implements Cache {
     public Object removeObject(Object key) {
         Long mybatisCache = null;
         try {
-            mybatisCache = RedisUtil.getJedis().hdel("mybatisCache".getBytes("utf-8"),turnKey(key));
+            mybatisCache = RedisUtil.getJedis().hdel(("mybatisCache:"+cacheName).getBytes("utf-8"),turnKey(key));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -77,7 +79,7 @@ public class RedisCache implements Cache {
     @Override
     public void clear() {
         try {
-            RedisUtil.getJedis().del("mybatisCache".getBytes("utf-8"));
+            RedisUtil.getJedis().del(("mybatisCache:"+cacheName).getBytes("utf-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -88,7 +90,7 @@ public class RedisCache implements Cache {
     public int getSize() {
         int mybatisCache = 0;
         try {
-            mybatisCache = RedisUtil.getJedis().hgetAll("mybatisCache".getBytes("utf-8")).size();
+            mybatisCache = RedisUtil.getJedis().hgetAll(("mybatisCache:"+cacheName).getBytes("utf-8")).size();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -102,7 +104,7 @@ public class RedisCache implements Cache {
         }
         String str = object.toString();
         String[] split = str.split(":");
-        String newKey = split[2]+":"+split[4]+":"+split[5]+":"+split[6];
+        String newKey = split[2]+":"+split[5]+":"+split[6];
         return newKey.getBytes("utf-8");
     }
 }
